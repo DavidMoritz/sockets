@@ -300,27 +300,6 @@ mainApp.controller('MainCtrl', [
 			}, total);
 		};
 
-		$s.newGuestPlayer = function newGuestPlayer() {
-			createNewUser({
-				rating: 1200,
-				uid: 'guest:' + Math.floor(Math.random() * 100000000),
-				facebook: {
-					displayName: $s.ff.newPlayerName,
-					cachedUserProfile: {
-						gender: 'unknown',
-						first_name: $s.ff.newPlayerName,
-						last_name: 'Guest',
-						timezone: '-5'
-						picture: {
-							data: {
-								url: 'http://lorempixel.com/100/100/animals/'
-							}
-						}
-					}
-				}
-			});
-		};
-
 		$s.changeCurrentPlayer = function changeCurrentPlayer(player) {
 			var index = $s.currentPlayer.index + 1;
 
@@ -450,6 +429,27 @@ mainApp.controller('MainCtrl', [
 			io.socket.put('/cursor/2',{
 				left: (e.pageX + 2) + 'px',
 				top: (e.pageY + 2) + 'px'
+			});
+		};
+
+		$s.newGuestPlayer = function newGuestPlayer() {
+			createNewUser({
+				rating: 1200,
+				uid: 'guest:' + Math.floor(Math.random() * 100000000),
+				facebook: {
+					displayName: $s.ff.newPlayerName,
+					cachedUserProfile: {
+						gender: 'unknown',
+						first_name: $s.ff.newPlayerName,
+						last_name: 'Guest',
+						timezone: '-5',
+						picture: {
+							data: {
+								url: 'http://lorempixel.com/100/100/animals/'
+							}
+						}
+					}
+				}
 			});
 		};
 
