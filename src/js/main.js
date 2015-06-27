@@ -333,7 +333,6 @@ mainApp.controller('MainCtrl', [
 			login({uid: "guest:123423"});
 			login({uid: "guest:235321"});
 			login({uid: "guest:353234"});
-			$s.startGame();
 		};
 
 		$s.collectReserveCard = function collectReserveCard(player, card) {
