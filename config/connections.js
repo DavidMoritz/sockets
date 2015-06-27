@@ -42,7 +42,7 @@ module.exports.connections = {
   ***************************************************************************/
   mysql: {
     module    : 'sails-mysql',
-    url       : 'mysql2://splendiduser:splended@splendid-gems.crw5t2eabd7d.us-west-2.rds.amazonaws.com:3306/splendid'
+    url       : 'mysql2://splendiduser:splendid@splendid-gems.crw5t2eabd7d.us-west-2.rds.amazonaws.com:3306/splendid'
   },
 
   /***************************************************************************
