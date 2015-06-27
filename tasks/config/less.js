@@ -21,6 +21,13 @@ module.exports = function(grunt) {
 				dest: '.tmp/public/styles/',
 				ext: '.css'
 			}]
+		},
+		sg: {
+			files: [{
+				'assets/inc/main.css': [
+					'src/less/all.less'
+				]
+			}]
 		}
 	});
 

@@ -31,6 +31,63 @@ module.exports = function(grunt) {
 				src: ['**/*'],
 				dest: 'www'
 			}]
+		},
+		sg: {
+			files: [
+				// copy all html pages
+				{
+					expand: true,
+					cwd: 'src/html',
+					src: ['**'],
+					dest: 'assets/html'
+				},
+
+				// copy all bootstrap fonts
+				{
+					expand: true,
+					cwd: 'lib/bootstrap/fonts/',
+					src: ['**'],
+					dest: 'assets/fonts/'
+				},
+
+				// copy all fontawesome fonts
+				{
+					expand: true,
+					cwd: 'lib/fontawesome/fonts/',
+					src: ['**'],
+					dest: 'assets/fonts/'
+				},
+
+				// copy all custom fonts
+				{
+					expand: true,
+					cwd: 'src/fonts/',
+					src: ['**'],
+					dest: 'assets/fonts/'
+				},
+
+				// copy Angular for head
+				{
+					src: 'lib/angular/angular.min.js',
+					dest: 'assets/inc/angular.js'
+				},
+
+				// copy all img files too
+				{
+					expand: true,
+					cwd: 'src/img',
+					src: ['**'],
+					dest: 'assets/img'
+				},
+
+				// copy favicon & apple-icon
+				{
+					expand: true,
+					cwd: 'src/',
+					src: ['favicon.ico', 'apple-touch-icon.png'],
+					dest: 'assets/'
+				}
+			]
 		}
 	});
 
