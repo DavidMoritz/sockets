@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html ng-app="mainApp">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Some have suggested that this game is similar to the card game &quot;Splendor&quot; by Space Cowboys.">
+    <meta name="author" content="Moritz Company">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <title>Splendid Gems</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="inc/main.css">
+    <script src="js/dependencies/sails.io.js"></script>
+    <script src="inc/angular.js"></script>
+  </head>
+  <body ng-cloak ng-controller="MainCtrl">
+    <div ng-class="gameStatus" ng-mousemove="moveCursor($event)" class="container"><img id="cursor" src="img/hand.png" ng-style="cursor" class="img img-responsive">
+      <header class="hide">
+        <h1>Splendid Gems</h1>
+      </header>
+      <div class="jumbotron">
+        <h2 class="text-center">Welcome to Splendid Gems!</h2>
+        <h4>Active Player: {{currentPlayer.name}}</h4>
+        <div class="notices"></div>
+      </div>
+      <div class="pre-game">
+        <input ng-model="ff.newPlayerName">
+        <button ng-click="addNewPlayer()" class="btn btn-info">Add New Player</button>
+        <div class="clearfix"></div>
+        <button ng-click="fbLogin()" class="btn btn-primary facebook-login">Login with Facebook</button>
+        <h4>Active Player: {{currentPlayer.name}}</h4>
+        <ul>
+          <li ng-repeat="player in allPlayers">
+            <h5 ng-click="changeCurrentPlayer(player)">Name: {{player.name}}</h5>
+          </li>
+        </ul>
+        <button ng-click="startGame()" class="btn btn-success">Start Game</button>
+        <button ng-click="quickStart()" class="btn btn-warning">Quick Start</button>
+      </div>
+      <div class="game-started row">
+        <section class="col-ms-3 col-sm-4 col-md-3">
+          <h4>All Players</h4>
+          <ul>
+            <li ng-repeat="player in allPlayers">
+              <h5 ng-click="changeCurrentPlayer(player)">{{player.name}} chips:({{player.chips.length}}) points:({{calculatePoints(player)}})</h5>
+              <div ng-if="player.tiles.length">
+                <h6 ng-repeat="(key, value) in player.tiles">Tile: <span class="capitalize">{{key}}</span> {{value.length > 1 ? "(" + value.length + ")" : ""}}</h6>
+              </div>
+              <div ng-if="player.cards.length">
+                <h6 ng-repeat="(key, value) in player.cards | groupBy: 'gem'">Card: <span class="capitalize">{{key}}</span> {{value.length > 1 ? "(" + value.length + ")" : ""}}</h6>
+              </div>
+              <div ng-if="player.chips.length">
+                <h6 ng-repeat="(key, value) in player.chips | groupBy: 'gem'">Gem: <span class="capitalize">{{key}}</span> {{value.length > 1 ? "(" + value.length + ")" : ""}}</h6>
+              </div>
+              <div ng-if="player.reserve.length">
+                <button ng-click="toggleReserve(player)" class="btn btn-info">{{player.showReserve ? 'Hide' : 'Show'}} Reserve</button>
+                <ul ng-show="player.showReserve" class="track player">
+                  <li ng-repeat="card in player.reserve" ng-class="card.gem" ng-click="collectReserveCard(player, card)" class="card">
+                    <h5 class="hidden">Id: {{card.id}}</h5>
+                    <h4 class="capitalize">{{card.gem}}</h4>
+                    <h5>Points: {{card.points}}</h5>
+                    <h5>Cost:</h5>
+                    <ul class="cost">
+                      <li ng-repeat="(gem, value) in card.cost" ng-class="gem" ng-show="value &gt; 0">
+                        <p>{{value}}</p>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </section>
+        <section class="col-ms-6 col-sm-4 col-md-6">
+          <ul ng-repeat="track in activeCards" class="track">
+            <li ng-repeat="card in track" ng-class="card.gem" ng-click="collectCard(card)" class="card">
+              <h5 class="hidden">Id: {{card.id}}</h5>
+              <h4 class="capitalize">{{card.gem}}</h4>
+              <h5>Points: {{card.points}}</h5>
+              <h5>Cost:</h5>
+              <ul class="cost">
+                <li ng-repeat="(gem, value) in card.cost" ng-class="gem" ng-show="value &gt; 0">
+                  <p>{{value}}</p>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="track tile-row">
+            <li ng-repeat="tile in activeTiles" ng-click="collectTile(tile)" class="tile card">
+              <h5>Points: {{tile.points}}</h5>
+              <h5>Cost:</h5>
+              <ul class="cost">
+                <li ng-repeat="(gem, value) in tile.cost" ng-class="gem" ng-show="value &gt; 0">
+                  <p>{{value}}</p>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+        <section class="col-ms-3 col-sm-4 col-md-3">
+          <button ng-repeat="gem in allGems" ng-click="addChip(gem.name)" ng-disabled="!gemAvailable(gem.name)" class="gem btn btn-{{gem.btnClass}}">{{gem.display}} <span>({{howMany(gem.name)}})</span></button>
+          <h4>Current Selection</h4>
+          <ul>
+            <li ng-repeat="gem in currentSelection track by $index">
+              <h5>Gem: <span class="capitalize">{{gem}}</span></h5>
+            </li>
+          </ul>
+          <button ng-click="collectChips()" ng-disabled="!currentSelection.length" class="btn btn-success">Collect Gems</button>
+          <button ng-click="clearSelection()" ng-disabled="!currentSelection.length" class="btn btn-info">Clear Selection</button>
+        </section>
+      </div>
+    </div>
+    <script src="inc/lib.js"></script>
+    <script src="inc/main.js"></script>
+  </body>
+</html>
+<!--		| @@javascriptReplaceFiles-->
