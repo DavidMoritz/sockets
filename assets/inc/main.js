@@ -25,15 +25,17 @@ mainApp.controller('MainCtrl', [
 	'$interval',
 	'$log',
 	'GemFactory',
-	'CardFactory',
 	'MethodFactory',
 	'FirebaseFactory',
-	function MainCtrl($s, $timeout, $interval, $log, GF, CF, MF, FF) {
+	function MainCtrl($s, $timeout, $interval, $log, GF, MF, FF) {
 		'use strict';
 
 		function init() {
 			//	init stuff
 			window.$s = $s;
+
+			shuffleCards();
+			shuffleTiles();
 
 			/**
 			// remove scrolling also removes click and drag
@@ -43,16 +45,20 @@ mainApp.controller('MainCtrl', [
 				}
 			}, false);
 			*/
-			$s.$watch('cursor');
+
+			// subscribe to "/cursor"
+			io.socket.get('/cursor');
+
+			io.socket.on('cursor',function(obj){
+				cursor.style.left = obj.data.left;
+				cursor.style.top = obj.data.top;
+			});
+
 			$s.predicate = '-id';
 			$s.reverse = false;
 			$s.chatList = [];
 			$s.chatUser = "nikkyBot"
 			$s.chatMessage="";
-
-			io.socket.get('/cursor', function(res) {
-				console.log(res);
-			});
 
 			io.socket.on('chat',function(obj){
 				if(obj.verb === 'created'){
@@ -62,11 +68,6 @@ mainApp.controller('MainCtrl', [
 				}
 				$log.info("Hi! How are you?");
 				$log.info(obj)
-			});
-
-			io.socket.on('cursor',function(obj){
-				cursor.style.left = obj.data.left;
-				cursor.style.top = obj.data.top;
 			});
 
 			$s.sendMsg = function(){
@@ -85,14 +86,6 @@ mainApp.controller('MainCtrl', [
 				id: gem + count,
 				name: gem,
 				gem: gem
-			});
-		}
-
-		function Card(options) {
-			_.extend(this, options, {
-				name: options.gem,
-				points: options.points || 0,
-				cost: _.extend(_.clone(costObject), options.cost)
 			});
 		}
 
@@ -134,16 +127,14 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function shuffleCards() {
-			var cardValues = [];
 			var cards = {};
-			_.each(CF.allCards, function eachCard(card) {
-				cardValues.push(new Card(card));
-			});
-			cards.track1 = _.shuffle(_.where(cardValues, {track: 1}));
-			cards.track2 = _.shuffle(_.where(cardValues, {track: 2}));
-			cards.track3 = _.shuffle(_.where(cardValues, {track: 3}));
 
-			return cards;
+			io.socket.get('/card', {}, function getAllCards(allCards) {
+				cards.track1 = _.shuffle(_.where(allCards, {track: 1}));
+				cards.track2 = _.shuffle(_.where(allCards, {track: 2}));
+				cards.track3 = _.shuffle(_.where(allCards, {track: 3}));
+				$s.allCards = cards;
+			});
 		}
 
 		function dealCard(track) {
@@ -157,12 +148,9 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function shuffleTiles() {
-			var tiles = [];
-			_.each(CF.allTiles, function eachTile(tile) {
-				tiles.push(new Tile(tile));
+			io.socket.get('/tile', {}, function getAllTiles(allTiles) {
+				$s.allTiles = _.shuffle(allTiles);
 			});
-
-			return _.shuffle(tiles);
 		}
 
 		function dealTile() {
@@ -302,8 +290,6 @@ mainApp.controller('MainCtrl', [
 				newPlayerName: ''
 			},
 			currentSelection: [],
-			allCards: shuffleCards(),
-			allTiles: shuffleTiles(),
 			activeTiles: [],
 			activeCards: {
 				track1: [],
