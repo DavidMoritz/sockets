@@ -20,9 +20,21 @@ module.exports = {
 		points:{
 			type:'integer',
 			required:true,
-			defaultsTo: '0'
+			defaultsTo: 0
+		},
+		name:{
+			type:'string',
+			required:true
+		},
+		gem:{
+			type:'string',
+			required:true
+		},
+		track:{
+			type:'integer',
+			required:true,
+			defaultsTo: 1
 		}
-
 	}
 };
 
