@@ -1,8 +1,9 @@
 {
-  "name": "socket-in-sails",
-  "private": true,
-  "version": "0.0.0",
-  "description": "a Sails application",
+  "name": "splendid-gems",
+  "version": "0.1.1",
+  "description": "Some have suggested that this game is similar to the card game 'Splendor' by Space Cowboys.",
+  "homepage": "http://moritzcompany.com",
+  "author": "Moritz Company",
   "keywords": [],
   "dependencies": {
     "sails": "~0.10.0-rc11",
@@ -31,8 +32,7 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/pranav/socket-in-sails.git"
+    "url": "https://github.com/jeremymoritz/splendid-gems.git"
   },
-  "author": "pranav",
   "license": ""
 }
