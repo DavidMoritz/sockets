@@ -103,8 +103,7 @@ mainApp.controller('MainCtrl', [
 		function dealTiles(count) {
 			io.socket.get('/tile', {}, function(tiles) {
 				$s.activeTiles = _.shuffle(tiles).splice(0, count);
-			})
-			$s.activeTiles.push($s.allTiles.splice(0, 1)[0]);
+			});
 		}
 
 		function dealChips(count) {
