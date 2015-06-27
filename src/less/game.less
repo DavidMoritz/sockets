@@ -13,11 +13,14 @@
 		cursor: url(../img/hand.png), auto !important;
 	}
 }
-.alert:after{
-	content: "X";
-	position: absolute;
-	right: 20px;
-	top: 20px;
+.alert {
+	position: relative;
+	&:after{
+		content: "X";
+		position: absolute;
+		right: 20px;
+		top: 15px;
+	}
 }
 .container {
 	&.game-started {
