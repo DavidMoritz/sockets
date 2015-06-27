@@ -37,6 +37,11 @@ mainApp.controller('MainCtrl', [
 
 			});
 
+			io.socket.on('cursor/3',function(obj){
+				$s.cursor.left = obj.left;
+				$s.cursor.top = obj.top;
+			});
+
 			$s.sendMsg = function(){
 				$log.info($s.chatMessage);
 				io.socket.post('/chat/addconv/',{
@@ -442,8 +447,12 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.moveCursor = function moveCursor(e) {
-			$s.cursor.left = (e.pageX + 2) + 'px';
-			$s.cursor.top = (e.pageY + 2) + 'px';
+			io.socket.post('/cursor/3',{
+				left: (e.pageX + 2) + 'px',
+				top: (e.pageY + 2) + 'px'
+			});
+			// $s.cursor.left = (e.pageX + 2) + 'px';
+			// $s.cursor.top = (e.pageY + 2) + 'px';
 		};
 
 		// $s.activeGames = FF.getFBArray('activeGames');
