@@ -12,8 +12,6 @@ mainApp.controller('MainCtrl', [
 			//	init stuff
 			window.$s = $s;
 
-			shuffleCards();
-			shuffleTiles();
 			getGems();
 
 			/**
@@ -59,19 +57,8 @@ mainApp.controller('MainCtrl', [
 			};
 		}
 
-		function Chip(gem, count) {
-			count = count || '';
-			_.extend(this, {
-				id: gem + count,
-				name: gem,
-				gem: gem
-			});
-		}
-
-		function Player(name) {
-			_.extend(this, {
-				name: name,
-				auto: true,
+		function Player(player) {
+			_.extend(this, player, {
 				chips: [],
 				cards: [],
 				tiles: [],
@@ -92,34 +79,18 @@ mainApp.controller('MainCtrl', [
 				timezone: authData.facebook.cachedUserProfile.timezone
 			}, function(newUser) {
 				$s.currentUser = newUser;
-				$s.allPlayers.push(newUser);
+				$s.allPlayers.push(new Player(newUser));
 			});
-		}
-
-		function shuffleCards() {
-			var cards = {};
-
-			io.socket.get('/card', {}, function getAllCards(allCards) {
-				cards.track1 = _.shuffle(_.where(allCards, {track: 1}));
-				cards.track2 = _.shuffle(_.where(allCards, {track: 2}));
-				cards.track3 = _.shuffle(_.where(allCards, {track: 3}));
-				$s.allCards = cards;
-			});
-		}
-
-		function dealCard(track) {
-			$s.activeCards[track].push($s.allCards[track].splice(0, 1)[0]);
 		}
 
 		function replaceCard(card) {
-			var track = 'track' + card.track;
-			$s.activeCards[track] = _.reject($s.activeCards[track], card);
-			dealCard(track);
+			$s.activeCards['track' + card.track] = _.reject($s.activeCards['track' + track], card);
+			dealCards(card.track, 1);
 		}
 
-		function shuffleTiles() {
-			io.socket.get('/tile', {}, function getAllTiles(allTiles) {
-				$s.allTiles = _.shuffle(allTiles);
+		function dealCards(track, count) {
+			io.socket.get('/card', {track: track}, function getCards(cards) {
+				$s.activeCards['track' + track] = _.shuffle(cards).splice(0, count);
 			});
 		}
 
@@ -129,22 +100,22 @@ mainApp.controller('MainCtrl', [
 			});
 		}
 
-		function dealTile() {
+		function dealTiles(count) {
+			io.socket.get('/tile', {}, function(tiles) {
+				$s.activeTiles = _.shuffle(tiles).splice(0, count);
+			})
 			$s.activeTiles.push($s.allTiles.splice(0, 1)[0]);
 		}
 
 		function dealChips(count) {
 			_.each($s.allGems, function eachGem(gem) {
-				if (gem.name !== 'gold') {
-					$s.allChips.push(new Chip(gem.name, count));
-				}
+				io.socket.get('/chip/', {
+					gem: gem.name,
+					limit: gem.name === 'gold' ? 5 : count
+				}, function(gems) {
+					$s.allChips.concat(gems);
+				});
 			});
-		}
-
-		function dealGoldChips() {
-			for (var i = 1; i <= 5; i++) {
-				$s.allChips.push(new Chip('gold', i));
-			}
 		}
 
 		function payForCard(card) {
@@ -249,7 +220,7 @@ mainApp.controller('MainCtrl', [
 					createNewUser(authData);
 				} else {
 					$s.currentUser = users[0];
-					$s.allPlayers.push(users[0]);
+					$s.allPlayers.push(new Player(users[0]));
 				}
 				$('body').addClass('logged-in');
 				$s.ff.newPlayerName = '';
@@ -309,19 +280,12 @@ mainApp.controller('MainCtrl', [
 			var index = 0;
 
 			for (var i = 1; i <= 3; i++) {
-				for (var j = 1; j <= 4; j++) {
-					dealCard('track' + i);
-				}
+				dealCards(i, 4);
 			}
 
-			for (var k = 0; k <= $s.allPlayers.length; k++) {
-				dealTile();
-			}
+			dealTiles($s.allPlayers.length + 1);
+			dealChips(chipCount);
 
-			for (var l = 1; l <= chipCount; l++) {
-				dealChips(l);
-			}
-			dealGoldChips();
 			$s.gameStatus = 'game-started';
 			_.each(_.shuffle($s.allPlayers), function(player) {
 				player.index = index++;
@@ -434,7 +398,7 @@ mainApp.controller('MainCtrl', [
 		$s.newGuestPlayer = function newGuestPlayer() {
 			login({
 				rating: 1200,
-				uid: 'guest:' + Math.floor(Math.random() * 100000000),
+				uid: 'guest:' + moment().format('YYMMDD-HHmmssSS'),
 				facebook: {
 					displayName: $s.ff.newPlayerName,
 					cachedUserProfile: {
