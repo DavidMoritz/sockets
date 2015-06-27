@@ -14,23 +14,23 @@ html(ng-app='mainApp')
 		link(rel='stylesheet', href='inc/main.css')
 		script(src='js/dependencies/sails.io.js')
 		script(src='inc/angular.js')
-	body(ng-cloak, ng-controller='MainCtrl' ng-class='currentPlayer.uid === currentUser.uid ? "active-player" : ""' ng-click='removeThis($event)')
+	body(ng-cloak, ng-controller='MainCtrl' ng-class='game.currentPlayer.uid === currentUser.uid ? "active-player" : ""' ng-click='removeThis($event)')
 		.container(ng-class='gameStatus' ng-mousemove='moveCursor($event)')
 			img#cursor.img.img-responsive(src='img/hand.png' ng-style='cursor')
 			header.hide
 				h1 Splendid Gems
 			.jumbotron
 				h2.text-center Welcome to Splendid Gems!
-				h4 Active Player: {{currentPlayer.name}}
+				h4 Active Player: {{game.currentPlayer.name}}
 				.notices
 			.pre-game
 				input(ng-model='ff.newPlayerName')
 				button.btn.btn-info(ng-click='newGuestPlayer()') Add New Player
 				.clearfix
 				button.btn.btn-primary.facebook-login(ng-click='fbLogin()') Login with Facebook
-				h4 Active Player: {{currentPlayer.name}}
+				h4 Active Player: {{game.currentPlayer.name}}
 				ul
-					li(ng-repeat='player in allPlayers')
+					li(ng-repeat='player in game.allPlayers')
 						h5(ng-click='changeCurrentPlayer(player)') Name: {{player.name}}
 				button.btn.btn-success(ng-click='startGame()') Start Game
 				button.btn.btn-warning(ng-click='quickStart()') Quick Start
@@ -38,7 +38,7 @@ html(ng-app='mainApp')
 				+col(null, 3, 4, 3)
 					h4 All Players
 					ul
-						li(ng-repeat='player in allPlayers')
+						li(ng-repeat='player in game.allPlayers')
 							h5(ng-click='changeCurrentPlayer(player)') {{player.name}} chips:({{player.chips.length}}) points:({{calculatePoints(player)}})
 							div(ng-if='player.tiles.length')
 								h6(ng-repeat="(key, value) in player.tiles") Tile: #[span.capitalize {{key}}] {{value.length > 1 ? "(" + value.length + ")" : ""}}
@@ -58,7 +58,7 @@ html(ng-app='mainApp')
 											li(ng-repeat='(gem, value) in card.cost' ng-class='gem' ng-show='value > 0')
 												p {{value}}
 				+col(null, 6, 4, 6)
-					ul.track(ng-repeat='track in activeCards')
+					ul.track(ng-repeat='track in game.activeCards')
 						li.card(ng-repeat='card in track' ng-class='card.gem' ng-click='collectCard(card)')
 							h5.hidden Id: {{card.id}}
 							h4.capitalize {{card.gem}}
@@ -79,10 +79,10 @@ html(ng-app='mainApp')
 					button(ng-repeat='gem in allGems' class='gem btn btn-{{gem.btnClass}}' ng-click='addChip(gem.name)' ng-disabled='!gemAvailable(gem.name)') {{gem.display}} #[span ({{howMany(gem.name)}})]
 					h4 Current Selection
 					ul
-						li(ng-repeat='gem in currentSelection track by $index')
+						li(ng-repeat='gem in game.currentSelection track by $index')
 							h5 Gem: #[span.capitalize {{gem}}]
-					button.btn.btn-success(ng-click='collectChips()' ng-disabled='!currentSelection.length') Collect Gems
-					button.btn.btn-info(ng-click='clearSelection()' ng-disabled='!currentSelection.length') Clear Selection
+					button.btn.btn-success(ng-click='collectChips()' ng-disabled='!game.currentSelection.length') Collect Gems
+					button.btn.btn-info(ng-click='clearSelection()' ng-disabled='!game.currentSelection.length') Clear Selection
 		script(src='inc/lib.js')
 		script(src='inc/main.js')
 //		| @@javascriptReplaceFiles
