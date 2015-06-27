@@ -23,7 +23,8 @@
     "grunt-contrib-cssmin": "~0.9.0",
     "grunt-contrib-less": "0.11.1",
     "grunt-contrib-coffee": "~0.10.1",
-    "grunt-contrib-jade": "0.14.1"
+    "grunt-contrib-jade": "0.14.1",
+    "sails-mysql": "0.10.12"
   },
   "scripts": {
     "start": "node app.js",
