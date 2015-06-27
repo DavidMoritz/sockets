@@ -16,7 +16,7 @@ module.exports = function(grunt) {
 			options: {
 				pretty: true
 			},
-			files: grunt.file.expandMapping(['**/*.jade'], 'dist/', {
+			files: grunt.file.expandMapping(['**/*.jade'], 'assets/', {
 				cwd: 'src/jade',
 				rename: function(destBase, destPath) {
 					return destBase + destPath.replace(/\.jade$/, '.html');
