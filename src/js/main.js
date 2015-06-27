@@ -28,13 +28,16 @@ mainApp.controller('MainCtrl', [
 			$s.chatUser = "nikkyBot"
 			$s.chatMessage="";
 
+			io.socket.get('/cursor');
+
 			io.socket.on('chat',function(obj){
 				if(obj.verb === 'created'){
 					$log.info(obj)
 					$s.chatList.push(obj.data);
 					$s.$digest();
 				}
-
+				$log.info("Hi! How are you?");
+				$log.info(obj)
 			});
 
 			io.socket.on('cursor/1',function(obj){
