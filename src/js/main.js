@@ -44,8 +44,8 @@ mainApp.controller('MainCtrl', [
 
 			io.socket.on('cursor',function(obj){
 				$log.info(obj);
-				$s.cursor.left = obj.left;
-				$s.cursor.top = obj.top;
+				$s.cursor.left = obj.data.left;
+				$s.cursor.top = obj.data.top;
 			});
 
 			$s.sendMsg = function(){
