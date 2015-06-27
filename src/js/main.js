@@ -432,7 +432,7 @@ mainApp.controller('MainCtrl', [
 			var promise = FF.facebookLogin();
 
 			promise.then(function(authData) {
-				io.socket.get('/user/' + authData.uid, {}, function(user) {
+				io.socket.get('/user/', {uid: authData.uid}, function(user) {
 					if (!user.uid) {
 						createNewUser(authData);
 					} else {
