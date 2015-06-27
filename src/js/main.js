@@ -259,7 +259,7 @@ mainApp.controller('MainCtrl', [
 				currentSelection: [],
 				currentPlayer: {index: 0},
 				allPlayers: [],
-				game.activeCards: {
+				activeCards: {
 					track1: [],
 					track2: [],
 					track3: []
