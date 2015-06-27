@@ -1,7 +1,8 @@
 mainApp.factory('FirebaseFactory', [
 	'$firebaseArray',
 	'$firebaseObject',
-	function FirebaseFactory($fbArray, $fbObject) {
+	'$q',
+	function FirebaseFactory($fbArray, $fbObject, $q) {
 		'use strict';
 		var FB = null;
 
@@ -36,15 +37,16 @@ mainApp.factory('FirebaseFactory', [
 
 			facebookLogin: function facebookLogin() {
 				var ref = this.getFB();
-				ref.authWithOAuthPopup('facebook', function facebookOAuth(error, authData) {
-					if (error) {
-						console.log('Login Failed!', error);
-					} else {
-						console.log('Authenticated successfully with payload:', authData);
-					}
-				}, {scope: 'user_friends'});
-
-				return authData;
+				return $q(function(resolve, reject) {
+					ref.authWithOAuthPopup('facebook', function facebookOAuth(error, authData) {
+						if (error) {
+							reject(console.log('Login Failed!', error));
+						} else {
+							console.log('Authenticated successfully with payload:', authData);
+							resolve(authData);
+						}
+					}, {scope: 'user_friends'});
+				});	
 			}
 		};
 	}

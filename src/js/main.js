@@ -429,15 +429,17 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.fbLogin = function facebookLogin() {
-			$s.authData = FF.facebookLogin();
+			var promise = FF.facebookLogin();
 
-			io.socket.get('/user/' + authData.uId, {}, function(user) {
-				if (!user.uid) {
-					createNewUser(user);
-				} else {
-					$s.currentUser = user;
-				}
-				$('body').addClass('logged-in');
+			promise.then(function(authData) {
+				io.socket.get('/user/' + authData.uId, {}, function(user) {
+					if (!user.uid) {
+						createNewUser(user);
+					} else {
+						$s.currentUser = user;
+					}
+					$('body').addClass('logged-in');
+				});
 			});
 		};
 
