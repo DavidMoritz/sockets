@@ -28,7 +28,6 @@ mainApp.controller('MainCtrl', [
 			$s.chatList = [];
 			$s.chatUser = "nikkyBot"
 			$s.chatMessage="";
-			window
 
 			io.socket.get('/cursor', function(res) {
 				console.log(res);
@@ -45,12 +44,10 @@ mainApp.controller('MainCtrl', [
 			});
 
 			io.socket.on('cursor',function(obj){
-				$log.info(obj);
-				cursor.style.left = obj.data.left;
-				cursor.style.top = obj.data.top;
-				if($s.app.apply) {
-					$s.$apply();
-				}
+				// cursor.style.left = obj.data.left;
+				// cursor.style.top = obj.data.top;
+				$s.cursor.left = obj.data.left;
+				$s.cursor.top = obj.data.top;
 			});
 
 			$s.sendMsg = function(){
