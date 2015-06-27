@@ -252,17 +252,11 @@ mainApp.controller('MainCtrl', [
 					$s.allPlayers.push(users[0]);
 				}
 				$('body').addClass('logged-in');
+				$s.ff.newPlayerName = '';
 			});
 		}
 
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
-		var costObject = {
-			diamond: 0,
-			sapphire: 0,
-			emerald: 0,
-			ruby: 0,
-			onyx: 0
-		};
 
 		//	initialize scoped variables
 		_.assign($s, {
@@ -274,6 +268,7 @@ mainApp.controller('MainCtrl', [
 				newPlayerName: ''
 			},
 			currentSelection: [],
+			currentPlayer: {index: 0},
 			activeTiles: [],
 			activeCards: {
 				track1: [],
@@ -311,6 +306,7 @@ mainApp.controller('MainCtrl', [
 
 		$s.startGame = function startGame() {
 			var chipCount = $s.allPlayers.length === 4 ? 7 : $s.allPlayers.length + 2;
+			var index = 0;
 
 			for (var i = 1; i <= 3; i++) {
 				for (var j = 1; j <= 4; j++) {
@@ -327,6 +323,10 @@ mainApp.controller('MainCtrl', [
 			}
 			dealGoldChips();
 			$s.gameStatus = 'game-started';
+			_.each(_.shuffle($s.allPlayers), function(player) {
+				player.index = index++;
+			}
+			$s.changeCurrentPlayer();
 		};
 
 		$s.quickStart = function quickStart() {
