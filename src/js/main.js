@@ -37,7 +37,8 @@ mainApp.controller('MainCtrl', [
 
 			});
 
-			io.socket.on('cursor/3',function(obj){
+			io.socket.on('cursor/1',function(obj){
+				$log.info(obj);
 				$s.cursor.left = obj.left;
 				$s.cursor.top = obj.top;
 			});
@@ -447,7 +448,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.moveCursor = function moveCursor(e) {
-			io.socket.post('/cursor/3',{
+			io.socket.post('/cursor/1',{
 				left: (e.pageX + 2) + 'px',
 				top: (e.pageY + 2) + 'px'
 			});
