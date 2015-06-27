@@ -129,7 +129,7 @@ mainApp.controller('MainCtrl', [
 		function shuffleTiles() {
 			io.socket.get('/tile', {}, function getAllTiles(allTiles) {
 				$s.allTiles = _.shuffle(allTiles);
-			}
+			});
 		}
 
 		function dealTile() {
