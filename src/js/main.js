@@ -433,10 +433,10 @@ mainApp.controller('MainCtrl', [
 
 			promise.then(function(authData) {
 				io.socket.get('/user/', {uid: authData.uid}, function(user) {
-					if (!user.uid) {
+					if (!user[0].uid) {
 						createNewUser(authData);
 					} else {
-						$s.currentUser = user;
+						$s.currentUser = user[0];
 					}
 					$('body').addClass('logged-in');
 				});
