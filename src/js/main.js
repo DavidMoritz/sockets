@@ -325,7 +325,7 @@ mainApp.controller('MainCtrl', [
 			$s.gameStatus = 'game-started';
 			_.each(_.shuffle($s.allPlayers), function(player) {
 				player.index = index++;
-			}
+			});
 			$s.changeCurrentPlayer();
 		};
 
