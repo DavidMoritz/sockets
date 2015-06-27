@@ -11,7 +11,7 @@ module.exports = {
 		name: {
 			type: "string",
 			required: true,
-			defaultsTo: ""
+			defaultsTo: "Guest"
 		},
 		rating: {
 			type: "integer",
@@ -21,32 +21,31 @@ module.exports = {
 		uid: {
 			type: "string", 
 			required: true,
-			defaultsTo: ""
+			defaultsTo: "guest:12345"
 		},
 		gender: {
 			type: "string",
-			required: true,
 			defaultsTo: "unknown"
 		},
 		firstName: {
 			type: "string",
 			required: true,
-			defaultsTo: ""
+			defaultsTo: "Visiting"
 		},
 		lastName: {
 			type: "string",
 			required: true,
-			defaultsTo: ""
+			defaultsTo: "Guest"
 		},
 		picture: {
 			type: "string",
 			required: true,
-			defaultsTo: ""
+			defaultsTo: "http://lorempixel.com/100/100/animals/"
 		},
 		timezone: {
 			type: "string",
 			required: true,
-			defaultsTo: ""
+			defaultsTo: "-5"
 		}
 	}
 };

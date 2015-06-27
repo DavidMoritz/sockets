@@ -92,6 +92,7 @@ mainApp.controller('MainCtrl', [
 				timezone: user.facebook.cachedUserProfile.timezone
 			}, function() {
 				$s.currentUser = user;
+				$s.allPlayers.push($s.currentPlayer);
 			});
 		}
 
@@ -242,6 +243,18 @@ mainApp.controller('MainCtrl', [
 			return answer;
 		}
 
+		function login(authData) {
+			io.socket.get('/user/', {uid: authData.uid}, function(user) {
+				if (!user[0].uid) {
+					createNewUser(authData);
+				} else {
+					$s.currentUser = user[0];
+					$s.allPlayers.push($s.currentPlayer);
+				}
+				$('body').addClass('logged-in');
+			});
+		}
+
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 		var costObject = {
 			diamond: 0,
@@ -287,10 +300,25 @@ mainApp.controller('MainCtrl', [
 			}, total);
 		};
 
-		$s.addNewPlayer = function addNewPlayer() {
-			$s.currentPlayer = new Player($s.ff.newPlayerName);
-			$s.allPlayers.push($s.currentPlayer);
-			$s.ff.newPlayerName = '';
+		$s.newGuestPlayer = function newGuestPlayer() {
+			createNewUser({
+				rating: 1200,
+				uid: 'guest:' + Math.floor(Math.random() * 100000000),
+				facebook: {
+					displayName: $s.ff.newPlayerName,
+					cachedUserProfile: {
+						gender: 'unknown',
+						first_name: $s.ff.newPlayerName,
+						last_name: 'Guest',
+						timezone: '-5'
+						picture: {
+							data: {
+								url: 'http://lorempixel.com/100/100/animals/'
+							}
+						}
+					}
+				}
+			});
 		};
 
 		$s.changeCurrentPlayer = function changeCurrentPlayer(player) {
@@ -323,12 +351,9 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.quickStart = function quickStart() {
-			$s.ff.newPlayerName = 'Joey';
-			$s.addNewPlayer();
-			$s.ff.newPlayerName = 'Chandler';
-			$s.addNewPlayer();
-			$s.ff.newPlayerName = 'Ross';
-			$s.addNewPlayer();
+			login({uid: "guest:123423"});
+			login({uid: "guest:235321"});
+			login({uid: "guest:353234"});
 			$s.startGame();
 		};
 
@@ -432,14 +457,7 @@ mainApp.controller('MainCtrl', [
 			var promise = FF.facebookLogin();
 
 			promise.then(function(authData) {
-				io.socket.get('/user/', {uid: authData.uid}, function(user) {
-					if (!user[0].uid) {
-						createNewUser(authData);
-					} else {
-						$s.currentUser = user[0];
-					}
-					$('body').addClass('logged-in');
-				});
+				login(authData);
 			});
 		};
 

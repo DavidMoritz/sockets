@@ -25,7 +25,7 @@ html(ng-app='mainApp')
 				.notices
 			.pre-game
 				input(ng-model='ff.newPlayerName')
-				button.btn.btn-info(ng-click='addNewPlayer()') Add New Player
+				button.btn.btn-info(ng-click='newGuestPlayer()') Add New Player
 				.clearfix
 				button.btn.btn-primary.facebook-login(ng-click='fbLogin()') Login with Facebook
 				h4 Active Player: {{currentPlayer.name}}
