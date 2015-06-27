@@ -438,8 +438,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.moveCursor = function moveCursor(e) {
-			io.socket.post('/cursor/',{
-				id: 1,
+			io.socket.put('/cursor/1',{
 				left: (e.pageX + 2) + 'px',
 				top: (e.pageY + 2) + 'px'
 			});
