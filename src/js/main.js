@@ -245,7 +245,7 @@ mainApp.controller('MainCtrl', [
 
 		function login(authData) {
 			io.socket.get('/user/', {uid: authData.uid}, function(users) {
-				if (!user[0].uid) {
+				if (!users[0].uid) {
 					createNewUser(authData);
 				} else {
 					$s.currentUser = users[0];
