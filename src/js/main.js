@@ -22,6 +22,7 @@ mainApp.controller('MainCtrl', [
 				}
 			}, false);
 			*/
+			$s.$watch('cursor');
 			$s.predicate = '-id';
 			$s.reverse = false;
 			$s.chatList = [];
@@ -46,6 +47,9 @@ mainApp.controller('MainCtrl', [
 				$log.info(obj);
 				$s.cursor.left = obj.data.left;
 				$s.cursor.top = obj.data.top;
+				if($s.app.apply) {
+					$s.$apply();
+				}
 			});
 
 			$s.sendMsg = function(){
