@@ -431,7 +431,7 @@ mainApp.controller('MainCtrl', [
 		$s.fbLogin = function facebookLogin() {
 			$s.authData = FF.facebookLogin();
 
-			io.socket.get('/user/' + authData.uId, {} function(user) {
+			io.socket.get('/user/' + authData.uId, {}, function(user) {
 				if (!user.uid) {
 					createNewUser(user);
 				} else {
