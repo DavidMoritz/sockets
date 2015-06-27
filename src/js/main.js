@@ -104,7 +104,9 @@ mainApp.controller('MainCtrl', [
 
 		function getCards() {
 			io.socket.get('/card', {}, function getAllCards(allCards) {
-				$s.game.allCards = _.shuffle(allCards);
+				$s.game.allCards.track1 = _.shuffle(_.where(cardValues, {track: 1}));
+				$s.game.allCards.track2 = _.shuffle(_.where(cardValues, {track: 2}));
+				$s.game.allCards.track3 = _.shuffle(_.where(cardValues, {track: 3}));
 			});
 		}
 
@@ -265,6 +267,7 @@ mainApp.controller('MainCtrl', [
 					track2: [],
 					track3: []
 				},
+				allCards: {}
 			},
 			activeTiles: [],
 			cursor: {
