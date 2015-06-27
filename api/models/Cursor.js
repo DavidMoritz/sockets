@@ -6,7 +6,7 @@
 */
 
 module.exports = {
-	adapter: 'sails-disk',
+	adapter: 'localDiskDb',
 	attributes: {
 		left:{
 			type:'string',
