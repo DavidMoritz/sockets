@@ -6,26 +6,9 @@
 */
 
 module.exports = {
-
+	adapter: 'localDiskDb',
 	attributes: {
-		red: {
-			type: "json"
-		},
-		blue: {
-			type: "json"
-		},
-		orange: {
-			type: "json"
-		},
-		green: {
-			type: "json"
-		},
-		deck: {
-			type: "array"
-		},
-		tiles: {
-			type: "array"
-		}
+
 	}
 };
 

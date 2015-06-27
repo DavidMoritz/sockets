@@ -19,7 +19,7 @@ module.exports = {
 			defaultsTo: 1200
 		},
 		uid: {
-			type: "string", 
+			type: "string",
 			required: true,
 			defaultsTo: "guest:12345"
 		},
