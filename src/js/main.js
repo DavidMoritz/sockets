@@ -68,12 +68,6 @@ mainApp.controller('MainCtrl', [
 			});
 		}
 
-		function Tile(options) {
-			_.extend(this, options, {
-				cost: _.extend(_.clone(costObject), options.cost)
-			});
-		}
-
 		function Player(name) {
 			_.extend(this, {
 				name: name,
