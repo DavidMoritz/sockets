@@ -251,6 +251,7 @@ mainApp.controller('MainCtrl', [
 		_.assign($s, {
 			time: moment().format(timeFormat),
 			allChips: [],
+			waitingPlayers: [],
 			gameStatus: 'pre-game',
 			ff: {
 				newPlayerName: ''
