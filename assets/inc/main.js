@@ -24,18 +24,16 @@ mainApp.controller('MainCtrl', [
 	'$timeout',
 	'$interval',
 	'$log',
-	'GemFactory',
 	'MethodFactory',
 	'FirebaseFactory',
-	function MainCtrl($s, $timeout, $interval, $log, GF, MF, FF) {
+	function MainCtrl($s, $timeout, $interval, $log, MF, FF) {
 		'use strict';
 
 		function init() {
 			//	init stuff
 			window.$s = $s;
 
-			shuffleCards();
-			shuffleTiles();
+			getGems();
 
 			/**
 			// remove scrolling also removes click and drag
@@ -80,25 +78,8 @@ mainApp.controller('MainCtrl', [
 			};
 		}
 
-		function Chip(gem, count) {
-			count = count || '';
-			_.extend(this, {
-				id: gem + count,
-				name: gem,
-				gem: gem
-			});
-		}
-
-		function Tile(options) {
-			_.extend(this, options, {
-				cost: _.extend(_.clone(costObject), options.cost)
-			});
-		}
-
-		function Player(name) {
-			_.extend(this, {
-				name: name,
-				auto: true,
+		function Player(player) {
+			_.extend(this, player, {
 				chips: [],
 				cards: [],
 				tiles: [],
@@ -107,68 +88,54 @@ mainApp.controller('MainCtrl', [
 			});
 		}
 
-		function User() {
-		}
-
-		function createNewUser() {
-			var currentTime = moment().format(timeFormat);
-
-			_.extend($s.currentUser, {
-				createdDate: currentTime,
-				name: $s.authData.facebook.displayName,
+		function createNewUser(authData) {			
+			io.socket.post('/user/create/',{
+				name: authData.facebook.displayName,
 				rating: 1200,
-				uid: $s.authData.uid,
-				gender: $s.authData.facebook.cachedUserProfile.gender,
-				firstName: $s.authData.facebook.cachedUserProfile.first_name,
-				lastName: $s.authData.facebook.cachedUserProfile.last_name,
-				picture: $s.authData.facebook.cachedUserProfile.picture.data.url,
-				timezone: $s.authData.facebook.cachedUserProfile.timezone
+				uid: authData.uid,
+				gender: authData.facebook.cachedUserProfile.gender,
+				firstName: authData.facebook.cachedUserProfile.first_name,
+				lastName: authData.facebook.cachedUserProfile.last_name,
+				picture: authData.facebook.cachedUserProfile.picture.data.url,
+				timezone: authData.facebook.cachedUserProfile.timezone
+			}, function(newUser) {
+				$s.currentUser = newUser;
+				$s.allPlayers.push(new Player(newUser));
 			});
-		}
-
-		function shuffleCards() {
-			var cards = {};
-
-			io.socket.get('/card', {}, function getAllCards(allCards) {
-				cards.track1 = _.shuffle(_.where(allCards, {track: 1}));
-				cards.track2 = _.shuffle(_.where(allCards, {track: 2}));
-				cards.track3 = _.shuffle(_.where(allCards, {track: 3}));
-				$s.allCards = cards;
-			});
-		}
-
-		function dealCard(track) {
-			$s.activeCards[track].push($s.allCards[track].splice(0, 1)[0]);
 		}
 
 		function replaceCard(card) {
-			var track = 'track' + card.track;
-			$s.activeCards[track] = _.reject($s.activeCards[track], card);
-			dealCard(track);
+			$s.activeCards['track' + card.track] = _.reject($s.activeCards['track' + card.track], card);
+			dealCards(card.track, 1);
 		}
 
-		function shuffleTiles() {
-			io.socket.get('/tile', {}, function getAllTiles(allTiles) {
-				$s.allTiles = _.shuffle(allTiles);
+		function dealCards(track, count) {
+			io.socket.get('/card', {track: track}, function getCards(cards) {
+				$s.activeCards['track' + track] = _.shuffle(cards).splice(0, count);
 			});
 		}
 
-		function dealTile() {
-			$s.activeTiles.push($s.allTiles.splice(0, 1)[0]);
+		function getGems() {
+			io.socket.get('/gem', {}, function getAllGems(allGems) {
+				$s.allGems = allGems;
+			});
+		}
+
+		function dealTiles(count) {
+			io.socket.get('/tile', {}, function(tiles) {
+				$s.activeTiles = _.shuffle(tiles).splice(0, count);
+			});
 		}
 
 		function dealChips(count) {
 			_.each($s.allGems, function eachGem(gem) {
-				if (gem.name !== 'gold') {
-					$s.allChips.push(new Chip(gem.name, count));
-				}
+				io.socket.get('/chip/', {
+					gem: gem.name,
+					limit: gem.name === 'gold' ? 5 : count
+				}, function(gems) {
+					$s.allChips = $s.allChips.concat(gems);
+				});
 			});
-		}
-
-		function dealGoldChips() {
-			for (var i = 1; i <= 5; i++) {
-				$s.allChips.push(new Chip('gold', i));
-			}
 		}
 
 		function payForCard(card) {
@@ -232,10 +199,11 @@ mainApp.controller('MainCtrl', [
 			var chip = _.find($s.allChips, {name: 'gold'});
 
 			if ($s.currentPlayer.reserve.length > 2) {
-				alert('You can\'t reserve more than 3 cards');
+				alertMessage('You can\'t reserve more than 3 cards', 'danger');
 
 				return false;
 			}
+			$s.currentPlayer.reservation || alertMessage('You have reserved the ' + card.name + ' card.', 'info');
 			$s.currentPlayer.reserve.push(card);
 			replaceCard(card);
 			delete $s.currentPlayer.reservation;
@@ -248,48 +216,51 @@ mainApp.controller('MainCtrl', [
 			return true;
 		}
 
+		function alertMessage(message, type) {
+			$('<div>', {
+				class: 'click-remove alert alert-' + type,
+				text: message,
+				'ng-click': 'remove($event)'
+			}).appendTo('.jumbotron');
+		}
+
 		function confirmReserve(card) {
-			var message = card ? 'Would you like to reserve this card?' : 'Please choose a card to reserve';
-			var answer = $s.currentPlayer.reservation || confirm(message);
+			if (card) {
+				return reserveCard(card);
+			} else {
+				alertMessage('Please choose a card to reserve.', 'info');
+				$s.currentPlayer.reservation = true;
+			}
 
-			if (answer) {
-				if (card) {
-					return reserveCard(card);
+			return true;
+		}
+
+		function login(authData) {
+			io.socket.get('/user/', {uid: authData.uid}, function(users) {
+				if (!users.length) {
+					createNewUser(authData);
 				} else {
-					$s.currentPlayer.reservation = true;
+					$s.currentUser = users[0];
+					$s.allPlayers.push(new Player(users[0]));
 				}
-			}
-
-			if (!answer && !card) {
-				$s.clearSelection();
-			}
-
-			return answer;
+				$('body').addClass('logged-in');
+				$s.ff.newPlayerName = '';
+			});
 		}
 
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
-		var costObject = {
-			diamond: 0,
-			sapphire: 0,
-			emerald: 0,
-			ruby: 0,
-			onyx: 0
-		};
-		// add later for everyone seeing same cursor movement
-		var cursorObj = FF.getFBObject('cursor');
-		cursorObj.$bindTo($s, 'cursor');
 
 		//	initialize scoped variables
 		_.assign($s, {
 			time: moment().format(timeFormat),
 			allPlayers: [],
 			allChips: [],
-			allGems: GF.allGems,
 			gameStatus: 'pre-game',
 			ff: {
 				newPlayerName: ''
 			},
 			currentSelection: [],
+			currentPlayer: {index: 0},
 			activeTiles: [],
 			activeCards: {
 				track1: [],
@@ -316,21 +287,6 @@ mainApp.controller('MainCtrl', [
 			}, total);
 		};
 
-		$s.fbLogin = function facebookLogin() {
-			$s.authData = FF.facebookLogin();
-			$s.currentUser = FF.getFBObject('users/' + authData.uId);
-
-			if (!$s.currentUser.uid) {
-				createNewUser();
-			}
-		};
-
-		$s.addNewPlayer = function addNewPlayer() {
-			$s.currentPlayer = new Player($s.ff.newPlayerName);
-			$s.allPlayers.push($s.currentPlayer);
-			$s.ff.newPlayerName = '';
-		};
-
 		$s.changeCurrentPlayer = function changeCurrentPlayer(player) {
 			var index = $s.currentPlayer.index + 1;
 
@@ -342,32 +298,26 @@ mainApp.controller('MainCtrl', [
 
 		$s.startGame = function startGame() {
 			var chipCount = $s.allPlayers.length === 4 ? 7 : $s.allPlayers.length + 2;
+			var index = 0;
 
 			for (var i = 1; i <= 3; i++) {
-				for (var j = 1; j <= 4; j++) {
-					dealCard('track' + i);
-				}
+				dealCards(i, 4);
 			}
 
-			for (var k = 0; k <= $s.allPlayers.length; k++) {
-				dealTile();
-			}
+			dealTiles($s.allPlayers.length + 1);
+			dealChips(chipCount);
 
-			for (var l = 1; l <= chipCount; l++) {
-				dealChips(l);
-			}
-			dealGoldChips();
 			$s.gameStatus = 'game-started';
+			_.each(_.shuffle($s.allPlayers), function(player) {
+				player.index = index++;
+			});
+			$s.changeCurrentPlayer();
 		};
 
 		$s.quickStart = function quickStart() {
-			$s.ff.newPlayerName = 'Joey';
-			$s.addNewPlayer();
-			$s.ff.newPlayerName = 'Chandler';
-			$s.addNewPlayer();
-			$s.ff.newPlayerName = 'Ross';
-			$s.addNewPlayer();
-			$s.startGame();
+			login({uid: "guest:123423"});
+			login({uid: "guest:235321"});
+			login({uid: "guest:353234"});
 		};
 
 		$s.collectReserveCard = function collectReserveCard(player, card) {
@@ -421,7 +371,7 @@ mainApp.controller('MainCtrl', [
 				if ($s.currentPlayer.reserve.length < 3) {
 					confirmReserve();
 				} else {
-					alert('You already have 3 cards, you may not reserve another');
+					alertMessage('You already have 3 cards, you may not reserve another', 'danger');
 				}
 			} else {
 				$s.currentSelection.push(_.clone(gem));
@@ -459,21 +409,51 @@ mainApp.controller('MainCtrl', [
 			return _.where($s.allChips, {name: gem}).length;
 		};
 
+		$s.removeThis = function remove(e) {
+			$(e.target).closest('.click-remove').hide();
+		};
+
 		$s.moveCursor = function moveCursor(e) {
-			io.socket.post('/cursor/1',{
+			io.socket.put('/cursor/2',{
 				left: (e.pageX + 2) + 'px',
 				top: (e.pageY + 2) + 'px'
 			});
-			// $s.cursor.left = (e.pageX + 2) + 'px';
-			// $s.cursor.top = (e.pageY + 2) + 'px';
 		};
 
-		// $s.activeGames = FF.getFBArray('activeGames');
-		// $s.activeGames.$loaded(function afterActiveGamesLoaded() {
-		// 	console.log('Firebase is working');
-		// 	$('.notices').text('Firebase is working!');
-		// 	$('body').addClass('facebook-available');
-		// });
+		$s.newGuestPlayer = function newGuestPlayer() {
+			login({
+				rating: 1200,
+				uid: 'guest:' + moment().format('YYMMDD-HHmmssSS'),
+				facebook: {
+					displayName: $s.ff.newPlayerName,
+					cachedUserProfile: {
+						gender: 'unknown',
+						first_name: $s.ff.newPlayerName,
+						last_name: 'Guest',
+						timezone: '-5',
+						picture: {
+							data: {
+								url: 'http://lorempixel.com/100/100/animals/'
+							}
+						}
+					}
+				}
+			});
+		};
+
+		$s.fbLogin = function facebookLogin() {
+			var promise = FF.facebookLogin();
+
+			promise.then(function(authData) {
+				login(authData);
+			});
+		};
+
+		$s.firebook = FF.getFBArray('facebook');
+		$s.firebook.$loaded(function afterFirebookLoaded() {
+			$('.notices').text('Firebase is working!');
+			$('body').addClass('facebook-available');
+		});
 
 		init();
 	}
@@ -1378,7 +1358,8 @@ mainApp.factory('CardFactory', [
 mainApp.factory('FirebaseFactory', [
 	'$firebaseArray',
 	'$firebaseObject',
-	function FirebaseFactory($fbArray, $fbObject) {
+	'$q',
+	function FirebaseFactory($fbArray, $fbObject, $q) {
 		'use strict';
 		var FB = null;
 
@@ -1413,15 +1394,16 @@ mainApp.factory('FirebaseFactory', [
 
 			facebookLogin: function facebookLogin() {
 				var ref = this.getFB();
-				ref.authWithOAuthPopup('facebook', function facebookOAuth(error, authData) {
-					if (error) {
-						console.log('Login Failed!', error);
-					} else {
-						console.log('Authenticated successfully with payload:', authData);
-					}
-				}, {scope: 'user_friends'});
-
-				return authData;
+				return $q(function(resolve, reject) {
+					ref.authWithOAuthPopup('facebook', function facebookOAuth(error, authData) {
+						if (error) {
+							reject(console.log('Login Failed!', error));
+						} else {
+							console.log('Authenticated successfully with payload:', authData);
+							resolve(authData);
+						}
+					}, {scope: 'user_friends'});
+				});	
 			}
 		};
 	}

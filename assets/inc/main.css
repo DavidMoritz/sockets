@@ -9092,10 +9092,19 @@ table.dataTable thead .sorting:after {
 .active-player #cursor {
   display: none;
 }
-.container,
-.btn,
-input {
+.active-player .container,
+.active-player .btn,
+.active-player input {
   cursor: url(../img/hand.png), auto !important;
+}
+.alert {
+  position: relative;
+}
+.alert:after {
+  content: "X";
+  position: absolute;
+  right: 20px;
+  top: 15px;
 }
 .container.game-started .pre-game {
   display: none;

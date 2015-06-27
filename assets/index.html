@@ -13,7 +13,7 @@
     <script src="js/dependencies/sails.io.js"></script>
     <script src="inc/angular.js"></script>
   </head>
-  <body ng-cloak ng-controller="MainCtrl">
+  <body ng-cloak ng-controller="MainCtrl" ng-class="currentPlayer.uid === currentUser.uid ? &quot;active-player&quot; : &quot;&quot;" ng-click="removeThis($event)">
     <div ng-class="gameStatus" ng-mousemove="moveCursor($event)" class="container"><img id="cursor" src="img/hand.png" ng-style="cursor" class="img img-responsive">
       <header class="hide">
         <h1>Splendid Gems</h1>
@@ -25,7 +25,7 @@
       </div>
       <div class="pre-game">
         <input ng-model="ff.newPlayerName">
-        <button ng-click="addNewPlayer()" class="btn btn-info">Add New Player</button>
+        <button ng-click="newGuestPlayer()" class="btn btn-info">Add New Player</button>
         <div class="clearfix"></div>
         <button ng-click="fbLogin()" class="btn btn-primary facebook-login">Login with Facebook</button>
         <h4>Active Player: {{currentPlayer.name}}</h4>
