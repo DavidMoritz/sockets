@@ -196,7 +196,7 @@ mainApp.controller('MainCtrl', [
 
 		function alertMessage(message, type) {
 			$('<div>', {
-				class: 'alert alert-' + type,
+				class: 'click-remove alert alert-' + type,
 				text: message,
 				'ng-click': 'remove($event)'
 			}).appendTo('.jumbotron');
@@ -395,8 +395,8 @@ mainApp.controller('MainCtrl', [
 			return _.where($s.allChips, {name: gem}).length;
 		};
 
-		$s.remove = function remove(e) {
-			$(e.currentTarget).hide();
+		$s.removeThis = function remove(e) {
+			$(e.target).closest('.click-remove').hide();
 		};
 
 		$s.moveCursor = function moveCursor(e) {

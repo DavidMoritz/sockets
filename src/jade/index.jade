@@ -14,7 +14,7 @@ html(ng-app='mainApp')
 		link(rel='stylesheet', href='inc/main.css')
 		script(src='js/dependencies/sails.io.js')
 		script(src='inc/angular.js')
-	body(ng-cloak, ng-controller='MainCtrl' ng-class='currentPlayer.uid === currentUser.uid ? "active-player" : ""')
+	body(ng-cloak, ng-controller='MainCtrl' ng-class='currentPlayer.uid === currentUser.uid ? "active-player" : ""' ng-click='removeThis($event)')
 		.container(ng-class='gameStatus' ng-mousemove='moveCursor($event)')
 			img#cursor.img.img-responsive(src='img/hand.png' ng-style='cursor')
 			header.hide
