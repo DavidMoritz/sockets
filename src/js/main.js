@@ -19,7 +19,7 @@ mainApp.controller('MainCtrl', [
 				if(game.id === $s.gameId) {
 					$s.game = game.data;
 				}
-			}
+			});
 			/**
 			// remove scrolling also removes click and drag
 			window.addEventListener('touchmove', function disallowScrolling(event) {
