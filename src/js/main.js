@@ -112,7 +112,7 @@ mainApp.controller('MainCtrl', [
 					gem: gem.name,
 					limit: gem.name === 'gold' ? 5 : count
 				}, function(gems) {
-					$s.allChips.concat(gems);
+					$s.allChips = $s.allChips.concat(gems);
 				});
 			});
 		}
