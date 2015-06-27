@@ -92,7 +92,7 @@ mainApp.controller('MainCtrl', [
 				timezone: user.facebook.cachedUserProfile.timezone
 			}, function() {
 				$s.currentUser = user;
-				$s.allPlayers.push($s.currentPlayer);
+				$s.allPlayers.push(user);
 			});
 		}
 
@@ -249,7 +249,7 @@ mainApp.controller('MainCtrl', [
 					createNewUser(authData);
 				} else {
 					$s.currentUser = user[0];
-					$s.allPlayers.push($s.currentPlayer);
+					$s.allPlayers.push(user[0]);
 				}
 				$('body').addClass('logged-in');
 			});
