@@ -80,19 +80,19 @@ mainApp.controller('MainCtrl', [
 			});
 		}
 
-		function createNewUser(user) {			
+		function createNewUser(authData) {			
 			io.socket.post('/user/create/',{
-				name: user.facebook.displayName,
+				name: authData.facebook.displayName,
 				rating: 1200,
-				uid: user.uid,
-				gender: user.facebook.cachedUserProfile.gender,
-				firstName: user.facebook.cachedUserProfile.first_name,
-				lastName: user.facebook.cachedUserProfile.last_name,
-				picture: user.facebook.cachedUserProfile.picture.data.url,
-				timezone: user.facebook.cachedUserProfile.timezone
-			}, function() {
-				$s.currentUser = user;
-				$s.allPlayers.push(user);
+				uid: authData.uid,
+				gender: authData.facebook.cachedUserProfile.gender,
+				firstName: authData.facebook.cachedUserProfile.first_name,
+				lastName: authData.facebook.cachedUserProfile.last_name,
+				picture: authData.facebook.cachedUserProfile.picture.data.url,
+				timezone: authData.facebook.cachedUserProfile.timezone
+			}, function(newUser) {
+				$s.currentUser = newUser;
+				$s.allPlayers.push(newUser);
 			});
 		}
 
@@ -244,12 +244,12 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function login(authData) {
-			io.socket.get('/user/', {uid: authData.uid}, function(user) {
+			io.socket.get('/user/', {uid: authData.uid}, function(users) {
 				if (!user[0].uid) {
 					createNewUser(authData);
 				} else {
-					$s.currentUser = user[0];
-					$s.allPlayers.push(user[0]);
+					$s.currentUser = users[0];
+					$s.allPlayers.push(users[0]);
 				}
 				$('body').addClass('logged-in');
 			});
@@ -433,7 +433,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.newGuestPlayer = function newGuestPlayer() {
-			createNewUser({
+			login({
 				rating: 1200,
 				uid: 'guest:' + Math.floor(Math.random() * 100000000),
 				facebook: {
