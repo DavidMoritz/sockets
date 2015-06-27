@@ -40,7 +40,7 @@ mainApp.controller('MainCtrl', [
 				$log.info(obj)
 			});
 
-			io.socket.on('cursor/1',function(obj){
+			io.socket.on('cursor',function(obj){
 				$log.info(obj);
 				$s.cursor.left = obj.left;
 				$s.cursor.top = obj.top;
