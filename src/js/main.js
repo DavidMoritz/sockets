@@ -434,7 +434,7 @@ mainApp.controller('MainCtrl', [
 			promise.then(function(authData) {
 				io.socket.get('/user/' + authData.uid, {}, function(user) {
 					if (!user.uid) {
-						createNewUser(user);
+						createNewUser(authData);
 					} else {
 						$s.currentUser = user;
 					}
