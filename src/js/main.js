@@ -90,7 +90,7 @@ mainApp.controller('MainCtrl', [
 
 		function dealCards(track, count) {
 			io.socket.get('/card', {track: track}, function getCards(cards) {
-				$s.activeCards['track' + track] = _.shuffle(cards).splice(0, count);
+				$s.activeCards['track' + track].push(_.shuffle(cards).splice(0, count)[0]);
 			});
 		}
 

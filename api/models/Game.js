@@ -7,8 +7,25 @@
 
 module.exports = {
 
-  attributes: {
-
-  }
+	attributes: {
+		red: {
+			type: "json"
+		},
+		blue: {
+			type: "json"
+		},
+		orange: {
+			type: "json"
+		},
+		green: {
+			type: "json"
+		},
+		deck: {
+			type: "array"
+		},
+		tiles: {
+			type: "array"
+		}
+	}
 };
 

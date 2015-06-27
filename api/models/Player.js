@@ -11,6 +11,12 @@ module.exports = {
 			type:'string',
 			required:true
 		},
+		color: {
+			type: 'string'
+		},
+		game: {
+			type: 'integer'
+		},
 		name:{
 			type:'string',
 			required:true
