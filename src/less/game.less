@@ -1,0 +1,112 @@
+#cursor {
+	transition: all ease 0.33s;
+	position: absolute;
+	z-index: 1000;
+}
+.active-player #cursor {
+	// ONLY FOR ACTIVE PLAYER
+	display: none;
+}
+.container,
+.btn,
+input {
+	cursor: url(../img/hand.png), auto !important;
+}
+.container {
+	&.game-started {
+		.pre-game {
+			display: none;
+		}
+	}
+	&.pre-game {
+		.game-started {
+			display: none;
+		}
+	}
+}
+.gem.btn {
+	margin-left: 3px;
+}
+
+.btn-gold {
+	color: black;
+	background-color: yellow;
+	border-color: #CC0;
+	&:hover {
+		background-color: #DD0;
+		border-color: #990;
+	}
+	&[disabled] {
+		color: #222;
+		background-color: #FF8
+	}
+}
+.facebook-login {
+	display: none;
+}
+.facebook-available {
+	.facebook-login {
+		display: inline-block;
+	}
+}
+@brand-primary: #428bca;
+@brand-success: #5cb85c;
+@brand-info: #5bc0de;
+@brand-warning: #f0ad4e;
+@brand-danger: #d9534f;
+ul.track {
+	list-style-type: none;
+	padding: 10px;
+	li.card {
+		border: solid 1px black;
+		width: 20%;
+		display: inline-block;
+		margin-left: 5px;
+		border-radius: 5px;
+		&.sapphire {
+			background-color: lighten(@brand-primary, 30%);
+		}
+		&.onyx {
+			background-color: lighten(@brand-warning, 30%);
+		}
+		&.emerald {
+			background-color: lighten(@brand-success, 30%);
+		}
+		&.ruby {
+			background-color: lighten(@brand-danger, 30%);
+		}
+		&.diamond {
+			background-color: @gray-lighter;
+		}
+		ul.cost {
+			list-style-type: none;
+			padding: 10px;
+			li {
+				display: inline-block;
+				border: 1px solid black;
+				border-radius: 5px;
+				margin-right: 3px;
+				text-align: center;
+				width: 20%;
+				height: 22px;
+				color: white;
+				&.sapphire {
+					background-color: @brand-primary;
+				}
+				&.onyx {
+					background-color: @brand-warning;
+				}
+				&.emerald {
+					background-color: @brand-success;
+				}
+				&.ruby {
+					background-color: @brand-danger;
+				}
+				&.diamond {
+					background-color: white;
+					color: black;
+				}
+			}
+		}
+	}
+}

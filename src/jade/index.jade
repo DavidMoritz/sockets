@@ -1,0 +1,87 @@
+include mixins
+
+doctype html
+html(ng-app='mainApp')
+	head
+		meta(charset='UTF-8')
+		meta(name='description', content='Some have suggested that this game is similar to the card game "Splendor" by Space Cowboys.')
+		meta(name='author', content='Moritz Company')
+		meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+		meta(name='apple-mobile-web-app-capable' content='yes')
+		meta(name='apple-touch-fullscreen' content='yes')
+		title Splendid Gems
+		link(rel='shortcut icon', href='favicon.ico')
+		link(rel='stylesheet', href='inc/main.css')
+		script(src='inc/angular.js')
+	body(ng-cloak, ng-controller='MainCtrl')
+		.container(ng-class='gameStatus' ng-mousemove='moveCursor($event)')
+			img#cursor.img.img-responsive(src='img/hand.png' ng-style='cursor')
+			header.hide
+				h1 Splendid Gems
+			.jumbotron
+				h2.text-center Welcome to Splendid Gems!
+				h4 Active Player: {{currentPlayer.name}}
+				.notices
+			.pre-game
+				input(ng-model='ff.newPlayerName')
+				button.btn.btn-info(ng-click='addNewPlayer()') Add New Player
+				.clearfix
+				button.btn.btn-primary.facebook-login(ng-click='fbLogin()') Login with Facebook
+				h4 Active Player: {{currentPlayer.name}}
+				ul
+					li(ng-repeat='player in allPlayers')
+						h5(ng-click='changeCurrentPlayer(player)') Name: {{player.name}}
+				button.btn.btn-success(ng-click='startGame()') Start Game
+				button.btn.btn-warning(ng-click='quickStart()') Quick Start
+			.game-started.row
+				+col(null, 3, 4, 3)
+					h4 All Players
+					ul
+						li(ng-repeat='player in allPlayers')
+							h5(ng-click='changeCurrentPlayer(player)') {{player.name}} chips:({{player.chips.length}}) points:({{calculatePoints(player)}})
+							div(ng-if='player.tiles.length')
+								h6(ng-repeat="(key, value) in player.tiles") Tile: #[span.capitalize {{key}}] {{value.length > 1 ? "(" + value.length + ")" : ""}}
+							div(ng-if='player.cards.length')
+								h6(ng-repeat="(key, value) in player.cards | groupBy: 'gem'") Card: #[span.capitalize {{key}}] {{value.length > 1 ? "(" + value.length + ")" : ""}}
+							div(ng-if='player.chips.length')
+								h6(ng-repeat="(key, value) in player.chips | groupBy: 'gem'") Gem: #[span.capitalize {{key}}] {{value.length > 1 ? "(" + value.length + ")" : ""}}
+							div(ng-if='player.reserve.length')
+								button.btn.btn-info(ng-click='toggleReserve(player)') {{player.showReserve ? 'Hide' : 'Show'}} Reserve
+								ul.track.player(ng-show='player.showReserve')
+									li.card(ng-repeat='card in player.reserve' ng-class='card.gem' ng-click='collectReserveCard(player, card)')
+										h5.hidden Id: {{card.id}}
+										h4.capitalize {{card.gem}}
+										h5 Points: {{card.points}}
+										h5 Cost:
+										ul.cost
+											li(ng-repeat='(gem, value) in card.cost' ng-class='gem' ng-show='value > 0')
+												p {{value}}
+				+col(null, 6, 4, 6)
+					ul.track(ng-repeat='track in activeCards')
+						li.card(ng-repeat='card in track' ng-class='card.gem' ng-click='collectCard(card)')
+							h5.hidden Id: {{card.id}}
+							h4.capitalize {{card.gem}}
+							h5 Points: {{card.points}}
+							h5 Cost:
+							ul.cost
+								li(ng-repeat='(gem, value) in card.cost' ng-class='gem' ng-show='value > 0')
+									p {{value}}
+					ul.track.tile-row
+						li.tile.card(ng-repeat='tile in activeTiles' ng-click='collectTile(tile)')
+							h5 Points: {{tile.points}}
+							h5 Cost:
+							ul.cost
+								li(ng-repeat='(gem, value) in tile.cost' ng-class='gem' ng-show='value > 0')
+									p {{value}}
+
+				+col(null, 3, 4, 3)
+					button(ng-repeat='gem in allGems' class='gem btn btn-{{gem.btnClass}}' ng-click='addChip(gem.name)' ng-disabled='!gemAvailable(gem.name)') {{gem.display}} #[span ({{howMany(gem.name)}})]
+					h4 Current Selection
+					ul
+						li(ng-repeat='gem in currentSelection track by $index')
+							h5 Gem: #[span.capitalize {{gem}}]
+					button.btn.btn-success(ng-click='collectChips()' ng-disabled='!currentSelection.length') Collect Gems
+					button.btn.btn-info(ng-click='clearSelection()' ng-disabled='!currentSelection.length') Clear Selection
+		script(src='inc/lib.js')
+		script(src='inc/main.js')
+//		| @@javascriptReplaceFiles
