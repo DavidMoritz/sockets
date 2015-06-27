@@ -14,11 +14,13 @@ module.exports = {
 		},
 		cost:{
 			type:'json',
-			required:true
+			required:true,
+			defaultsTo: 'null'
 		},
 		points:{
 			type:'integer',
-			required:true
+			required:true,
+			defaultsTo: '0'
 		}
 
 	}
