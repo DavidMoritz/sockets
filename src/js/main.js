@@ -178,7 +178,7 @@ mainApp.controller('MainCtrl', [
 			var chip = _.find($s.allChips, {name: 'gold'});
 
 			if ($s.currentPlayer.reserve.length > 2) {
-				alert('You can\'t reserve more than 3 cards');
+				alertMessage('You can\'t reserve more than 3 cards', 'danger');
 
 				return false;
 			}
@@ -194,9 +194,16 @@ mainApp.controller('MainCtrl', [
 			return true;
 		}
 
+		function alertMessage(message, type) {
+			$('<div>', {
+				class: 'alert alert-' + type,
+				text: message
+			}).appendTo('.jumbotron');
+		}
+
 		function confirmReserve(card) {
-			var message = card ? 'Would you like to reserve this card?' : 'Please choose a card to reserve';
-			var answer = $s.currentPlayer.reservation || confirm(message);
+			var message = card ? 'You have reserved the ' + card.name + ' card.' : 'Please choose a card to reserve';
+			var answer = $s.currentPlayer.reservation || alertMessage(message, 'info');
 
 			if (answer) {
 				if (card) {
@@ -349,7 +356,7 @@ mainApp.controller('MainCtrl', [
 				if ($s.currentPlayer.reserve.length < 3) {
 					confirmReserve();
 				} else {
-					alert('You already have 3 cards, you may not reserve another');
+					alertMessage('You already have 3 cards, you may not reserve another', 'danger');
 				}
 			} else {
 				$s.currentSelection.push(_.clone(gem));
