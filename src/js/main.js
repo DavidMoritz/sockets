@@ -80,22 +80,18 @@ mainApp.controller('MainCtrl', [
 			});
 		}
 
-		function User() {
-		}
-
-		function createNewUser() {
-			var currentTime = moment().format(timeFormat);
-
-			_.extend($s.currentUser, {
-				createdDate: currentTime,
-				name: $s.authData.facebook.displayName,
+		function createNewUser(user) {			
+			io.socket.post('/user/create/',{
+				name: user.facebook.displayName,
 				rating: 1200,
-				uid: $s.authData.uid,
-				gender: $s.authData.facebook.cachedUserProfile.gender,
-				firstName: $s.authData.facebook.cachedUserProfile.first_name,
-				lastName: $s.authData.facebook.cachedUserProfile.last_name,
-				picture: $s.authData.facebook.cachedUserProfile.picture.data.url,
-				timezone: $s.authData.facebook.cachedUserProfile.timezone
+				uid: user.uid,
+				gender: user.facebook.cachedUserProfile.gender,
+				firstName: user.facebook.cachedUserProfile.first_name,
+				lastName: user.facebook.cachedUserProfile.last_name,
+				picture: user.facebook.cachedUserProfile.picture.data.url,
+				timezone: user.facebook.cachedUserProfile.timezone
+			}, function() {
+				$s.currentUser = user;
 			});
 		}
 
@@ -254,9 +250,6 @@ mainApp.controller('MainCtrl', [
 			ruby: 0,
 			onyx: 0
 		};
-		// add later for everyone seeing same cursor movement
-		var cursorObj = FF.getFBObject('cursor');
-		cursorObj.$bindTo($s, 'cursor');
 
 		//	initialize scoped variables
 		_.assign($s, {
@@ -292,15 +285,6 @@ mainApp.controller('MainCtrl', [
 			return _.reduce(player.tiles, function sumTiles(total, tile) {
 				return total + tile.points;
 			}, total);
-		};
-
-		$s.fbLogin = function facebookLogin() {
-			$s.authData = FF.facebookLogin();
-			$s.currentUser = FF.getFBObject('users/' + authData.uId);
-
-			if (!$s.currentUser.uid) {
-				createNewUser();
-			}
 		};
 
 		$s.addNewPlayer = function addNewPlayer() {
@@ -442,16 +426,26 @@ mainApp.controller('MainCtrl', [
 				left: (e.pageX + 2) + 'px',
 				top: (e.pageY + 2) + 'px'
 			});
-			// $s.cursor.left = (e.pageX + 2) + 'px';
-			// $s.cursor.top = (e.pageY + 2) + 'px';
 		};
 
-		// $s.activeGames = FF.getFBArray('activeGames');
-		// $s.activeGames.$loaded(function afterActiveGamesLoaded() {
-		// 	console.log('Firebase is working');
-		// 	$('.notices').text('Firebase is working!');
-		// 	$('body').addClass('facebook-available');
-		// });
+		$s.fbLogin = function facebookLogin() {
+			$s.authData = FF.facebookLogin();
+
+			io.socket.get('/user/' + authData.uId, {} function(user) {
+				if (!user.uid) {
+					createNewUser(user);
+				} else {
+					$s.currentUser = user;
+				}
+				$('body').addClass('logged-in');
+			});
+		};
+
+		$s.firebook = FF.getFBArray('facebook');
+		$s.firebook.$loaded(function afterFirebookLoaded() {
+			$('.notices').text('Firebase is working!');
+			$('body').addClass('facebook-available');
+		});
 
 		init();
 	}

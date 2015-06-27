@@ -7,8 +7,47 @@
 
 module.exports = {
 
-  attributes: {
-
-  }
+	attributes: {
+		name: {
+			type: "string",
+			required: true,
+			defaultsTo: ""
+		},
+		rating: {
+			type: "integer",
+			required: true,
+			defaultsTo: 1200
+		},
+		uid: {
+			type: "string", 
+			required: true,
+			defaultsTo: ""
+		},
+		gender: {
+			type: "string",
+			required: true,
+			defaultsTo: "unknown"
+		},
+		firstName: {
+			type: "string",
+			required: true,
+			defaultsTo: ""
+		},
+		lastName: {
+			type: "string",
+			required: true,
+			defaultsTo: ""
+		},
+		picture: {
+			type: "string",
+			required: true,
+			defaultsTo: ""
+		},
+		timezone: {
+			type: "string",
+			required: true,
+			defaultsTo: ""
+		}
+	}
 };
 
