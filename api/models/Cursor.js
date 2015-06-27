@@ -6,9 +6,16 @@
 */
 
 module.exports = {
-
-  attributes: {
-
-  }
+	adapter: 'sails-disk',
+	attributes: {
+		left:{
+			type:'string',
+			required:true
+		},
+		top:{
+			type:'string',
+			required:true
+		}
+	}
 };
 

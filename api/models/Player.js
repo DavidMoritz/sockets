@@ -6,9 +6,35 @@
 */
 
 module.exports = {
-
-  attributes: {
-
-  }
+	attributes: {
+		id:{
+			type:'string',
+			required:true
+		},
+		name:{
+			type:'string',
+			required:true
+		},
+		auto:{
+			type:'boolean',
+			required:true
+		},
+		chips:{
+			type:'array'
+		},
+		cards:{
+			type:'array'
+		},
+		tiles:{
+			type:'array'
+		},
+		reserve:{
+			type:'array'
+		},
+		index:{
+			type:'integer',
+			required:true
+		}
+	}
 };
 

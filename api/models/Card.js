@@ -7,8 +7,20 @@
 
 module.exports = {
 
-  attributes: {
+	attributes: {
+		id:{
+			type:'string',
+			required:true
+		},
+		cost:{
+			type:'json',
+			required:true
+		},
+		points:{
+			type:'integer',
+			required:true
+		}
 
-  }
+	}
 };
 

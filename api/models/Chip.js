@@ -6,9 +6,19 @@
 */
 
 module.exports = {
-
-  attributes: {
-
-  }
+	attributes: {
+		id:{
+			type:'string',
+			required:true
+		},
+		name:{
+			type:'string',
+			required:true
+		},
+		gem:{
+			type:'string',
+			required:true
+		}
+	}
 };
 
