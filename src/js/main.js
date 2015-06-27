@@ -182,6 +182,7 @@ mainApp.controller('MainCtrl', [
 
 				return false;
 			}
+			$s.currentPlayer.reservation || alertMessage('You have reserved the ' + card.name + ' card.', 'info');
 			$s.currentPlayer.reserve.push(card);
 			replaceCard(card);
 			delete $s.currentPlayer.reservation;
@@ -203,22 +204,14 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function confirmReserve(card) {
-			var message = card ? 'You have reserved the ' + card.name + ' card.' : 'Please choose a card to reserve';
-			var answer = $s.currentPlayer.reservation || alertMessage(message, 'info');
-
-			if (answer) {
-				if (card) {
-					return reserveCard(card);
-				} else {
-					$s.currentPlayer.reservation = true;
-				}
+			if (card) {
+				return reserveCard(card);
+			} else {
+				alertMessage('Please choose a card to reserve.', 'info');
+				$s.currentPlayer.reservation = true;
 			}
 
-			if (!answer && !card) {
-				$s.clearSelection();
-			}
-
-			return answer;
+			return true;
 		}
 
 		function login(authData) {
