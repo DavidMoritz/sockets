@@ -9086,7 +9086,6 @@ table.dataTable thead .sorting:after {
   }
 }
 #cursor {
-  transition: all ease 0.33s;
   position: absolute;
   z-index: 1000;
 }

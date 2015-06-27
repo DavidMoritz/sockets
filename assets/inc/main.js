@@ -43,11 +43,16 @@ mainApp.controller('MainCtrl', [
 				}
 			}, false);
 			*/
+			$s.$watch('cursor');
 			$s.predicate = '-id';
 			$s.reverse = false;
 			$s.chatList = [];
 			$s.chatUser = "nikkyBot"
 			$s.chatMessage="";
+
+			io.socket.get('/cursor', function(res) {
+				console.log(res);
+			});
 
 			io.socket.on('chat',function(obj){
 				if(obj.verb === 'created'){
@@ -55,12 +60,13 @@ mainApp.controller('MainCtrl', [
 					$s.chatList.push(obj.data);
 					$s.$digest();
 				}
-
+				$log.info("Hi! How are you?");
+				$log.info(obj)
 			});
 
-			io.socket.on('cursor/3',function(obj){
-				$s.cursor.left = obj.left;
-				$s.cursor.top = obj.top;
+			io.socket.on('cursor',function(obj){
+				cursor.style.left = obj.data.left;
+				cursor.style.top = obj.data.top;
 			});
 
 			$s.sendMsg = function(){
@@ -468,7 +474,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.moveCursor = function moveCursor(e) {
-			io.socket.post('/cursor/3',{
+			io.socket.post('/cursor/1',{
 				left: (e.pageX + 2) + 'px',
 				top: (e.pageY + 2) + 'px'
 			});
