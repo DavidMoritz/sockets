@@ -18,7 +18,7 @@ module.exports = {
 			Cursor.create(data_from_client)
 				.exec(function(error,data_from_client){
 					console.log(data_from_client);
-					Cursor.publishCreate({id: 1, left : data_from_client.left , top:data_from_client.top});
+					Cursor.publishCreate({id: data_from_client.id, left : data_from_client.left , top:data_from_client.top});
 				}); 
 		}
 		else if(req.isSocket){

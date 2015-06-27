@@ -3,10 +3,9 @@ mainApp.controller('MainCtrl', [
 	'$timeout',
 	'$interval',
 	'$log',
-	'GemFactory',
 	'MethodFactory',
 	'FirebaseFactory',
-	function MainCtrl($s, $timeout, $interval, $log, GF, MF, FF) {
+	function MainCtrl($s, $timeout, $interval, $log, MF, FF) {
 		'use strict';
 
 		function init() {
@@ -15,6 +14,7 @@ mainApp.controller('MainCtrl', [
 
 			shuffleCards();
 			shuffleTiles();
+			getGems();
 
 			/**
 			// remove scrolling also removes click and drag
@@ -123,6 +123,12 @@ mainApp.controller('MainCtrl', [
 		function shuffleTiles() {
 			io.socket.get('/tile', {}, function getAllTiles(allTiles) {
 				$s.allTiles = _.shuffle(allTiles);
+			});
+		}
+
+		function getGems() {
+			io.socket.get('/gem', {}, function getAllGems(allGems) {
+				$s.allGems = allGems;
 			});
 		}
 
@@ -257,7 +263,6 @@ mainApp.controller('MainCtrl', [
 			time: moment().format(timeFormat),
 			allPlayers: [],
 			allChips: [],
-			allGems: GF.allGems,
 			gameStatus: 'pre-game',
 			ff: {
 				newPlayerName: ''
@@ -433,7 +438,8 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.moveCursor = function moveCursor(e) {
-			io.socket.post('/cursor/1',{
+			io.socket.post('/cursor/',{
+				id: 1,
 				left: (e.pageX + 2) + 'px',
 				top: (e.pageY + 2) + 'px'
 			});
