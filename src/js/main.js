@@ -84,7 +84,7 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function replaceCard(card) {
-			$s.activeCards['track' + card.track] = _.reject($s.activeCards['track' + track], card);
+			$s.activeCards['track' + card.track] = _.reject($s.activeCards['track' + card.track], card);
 			dealCards(card.track, 1);
 		}
 
