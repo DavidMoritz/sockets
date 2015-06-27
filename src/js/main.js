@@ -4,15 +4,17 @@ mainApp.controller('MainCtrl', [
 	'$interval',
 	'$log',
 	'GemFactory',
-	'CardFactory',
 	'MethodFactory',
 	'FirebaseFactory',
-	function MainCtrl($s, $timeout, $interval, $log, GF, CF, MF, FF) {
+	function MainCtrl($s, $timeout, $interval, $log, GF, MF, FF) {
 		'use strict';
 
 		function init() {
 			//	init stuff
 			window.$s = $s;
+
+			shuffleCards();
+			shuffleTiles();
 
 			/**
 			// remove scrolling also removes click and drag
@@ -66,14 +68,6 @@ mainApp.controller('MainCtrl', [
 			});
 		}
 
-		function Card(options) {
-			_.extend(this, options, {
-				name: options.gem,
-				points: options.points || 0,
-				cost: _.extend(_.clone(costObject), options.cost)
-			});
-		}
-
 		function Tile(options) {
 			_.extend(this, options, {
 				cost: _.extend(_.clone(costObject), options.cost)
@@ -112,16 +106,14 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function shuffleCards() {
-			var cardValues = [];
 			var cards = {};
-			_.each(CF.allCards, function eachCard(card) {
-				cardValues.push(new Card(card));
-			});
-			cards.track1 = _.shuffle(_.where(cardValues, {track: 1}));
-			cards.track2 = _.shuffle(_.where(cardValues, {track: 2}));
-			cards.track3 = _.shuffle(_.where(cardValues, {track: 3}));
 
-			return cards;
+			io.socket.get('/card', {}, function getAllCards(allCards) {
+				cards.track1 = _.shuffle(_.where(allCards, {track: 1}));
+				cards.track2 = _.shuffle(_.where(allCards, {track: 2}));
+				cards.track3 = _.shuffle(_.where(allCards, {track: 3}));
+				$s.allCards = cards;
+			});
 		}
 
 		function dealCard(track) {
@@ -135,12 +127,9 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function shuffleTiles() {
-			var tiles = [];
-			_.each(CF.allTiles, function eachTile(tile) {
-				tiles.push(new Tile(tile));
-			});
-
-			return _.shuffle(tiles);
+			io.socket.get('/tile', {}, function getAllTiles(allTiles) {
+				$s.allTiles = _.shuffle(allTiles);
+			}
 		}
 
 		function dealTile() {
@@ -280,8 +269,6 @@ mainApp.controller('MainCtrl', [
 				newPlayerName: ''
 			},
 			currentSelection: [],
-			allCards: shuffleCards(),
-			allTiles: shuffleTiles(),
 			activeTiles: [],
 			activeCards: {
 				track1: [],
