@@ -10,11 +10,13 @@ module.exports = {
 	attributes: {
 		left:{
 			type:'string',
-			required:true
+			required:true,
+			defaultsTo: '0px'
 		},
 		top:{
 			type:'string',
-			required:true
+			required:true,
+			defaultsTo: '0px'
 		}
 	}
 };
