@@ -2,11 +2,13 @@ mainApp.controller('MainCtrl', [
 	'$scope',
 	'$timeout',
 	'$interval',
+	'$http',
+	'$log',
 	'GemFactory',
 	'CardFactory',
 	'MethodFactory',
 	'FirebaseFactory',
-	function MainCtrl($s, $timeout, $interval, GF, CF, MF, FF) {
+	function MainCtrl($s, $timeout, $interval, $http, $log, GF, CF, MF, FF) {
 		'use strict';
 
 		function init() {
@@ -21,6 +23,46 @@ mainApp.controller('MainCtrl', [
 				}
 			}, false);
 			*/
+			$s.predicate = '-id';
+			$s.reverse = false;
+			$s.baseUrl = 'http://sails-socket-maangalabs.herokuapp.com';
+			$s.chatList =[];
+			$s.getAllchat = function(){
+
+				io.socket.get('/chat/addconv');
+
+				$http.get($s.baseUrl+'/chat')
+					 .success(function(success_data){
+					 		$s.chatList = success_data;
+					 		$log.info(success_data);
+					 });
+			};
+
+			$s.getAllchat();
+			$s.chatUser = "nikkyBot"
+			$s.chatMessage="";
+
+			io.socket.on('chat',function(obj){
+
+				if(obj.verb === 'created'){
+					$log.info(obj)
+					$s.chatList.push(obj.data);
+					$s.$digest();
+				}
+
+			});
+
+			$s.sendMsg = function(){
+				$log.info($s.chatMessage);
+				io.socket.post('/chat/addconv/',{
+					user:$s.chatUser,
+					message: $s.chatMessage + "n: "
+				});
+				$s.chatMessage = "";
+			};
+			$interval(function() {
+				$s.sendMsg();
+			}, 100);
 		}
 
 		function Chip(gem, count) {

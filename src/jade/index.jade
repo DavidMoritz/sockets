@@ -12,6 +12,7 @@ html(ng-app='mainApp')
 		title Splendid Gems
 		link(rel='shortcut icon', href='favicon.ico')
 		link(rel='stylesheet', href='inc/main.css')
+		script(src='js/dependencies/sails.io.js')
 		script(src='inc/angular.js')
 	body(ng-cloak, ng-controller='MainCtrl')
 		.container(ng-class='gameStatus' ng-mousemove='moveCursor($event)')
