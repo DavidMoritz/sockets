@@ -44,10 +44,8 @@ mainApp.controller('MainCtrl', [
 			});
 
 			io.socket.on('cursor',function(obj){
-				// cursor.style.left = obj.data.left;
-				// cursor.style.top = obj.data.top;
-				$s.cursor.left = obj.data.left;
-				$s.cursor.top = obj.data.top;
+				cursor.style.left = obj.data.left;
+				cursor.style.top = obj.data.top;
 			});
 
 			$s.sendMsg = function(){
