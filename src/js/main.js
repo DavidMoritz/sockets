@@ -28,7 +28,9 @@ mainApp.controller('MainCtrl', [
 			$s.chatUser = "nikkyBot"
 			$s.chatMessage="";
 
-			io.socket.get('/cursor');
+			io.socket.get('/cursor', function(res) {
+				console.log(res);
+			});
 
 			io.socket.on('chat',function(obj){
 				if(obj.verb === 'created'){
