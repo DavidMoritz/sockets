@@ -270,7 +270,7 @@ mainApp.controller('MainCtrl', [
 					/** TODO: This will eventually allow us to choose a game, but I am 
 					 * statically setting it for now */
 					$s.game = games[0];
-					$s.gameId = game[0].id;
+					$s.gameId = games[0].id;
 				} else {
 					createNewGame();
 				}
