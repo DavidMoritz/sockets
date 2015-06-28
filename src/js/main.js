@@ -268,7 +268,7 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function createNewGame() {
-			io.socket.put('/game', {
+			io.socket.put('/game/create', {
 				currentSelection: [],
 				currentPlayer: {index: 0},
 				allPlayers: [],
