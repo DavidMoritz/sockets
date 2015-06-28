@@ -13,6 +13,7 @@ mainApp.controller('MainCtrl', [
 			window.$s = $s;
 
 			getGems();
+			getCards();
 
 			io.socket.on('game', function(game) {
 				/**** This needs to be optimized ***/
