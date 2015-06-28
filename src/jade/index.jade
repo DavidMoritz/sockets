@@ -27,8 +27,9 @@ html(ng-app='mainApp')
 				input(ng-model='ff.newPlayerName')
 				button.btn.btn-info(ng-click='newGuestPlayer()') Add New Player
 				.clearfix
+				h4.user You are logged in as {{currentUser.name}}
 				button.btn.btn-primary.facebook-login(ng-click='fbLogin()') Login with Facebook
-				h4 Active Player: {{game.currentPlayer.name}}
+				h4 All Waiting Players
 				ul
 					li(ng-repeat='player in waitingPlayers')
 						h5(ng-click='changeCurrentPlayer(player)') Name: {{player.name}}
