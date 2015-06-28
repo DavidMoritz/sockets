@@ -278,6 +278,7 @@ mainApp.controller('MainCtrl', [
 					track3: []
 				},
 				allCards: {},
+				allChips: [],
 				started: false
 			}, findActiveGames);
 		}
@@ -287,7 +288,6 @@ mainApp.controller('MainCtrl', [
 		//	initialize scoped variables
 		_.assign($s, {
 			time: moment().format(timeFormat),
-			allChips: [],
 			waitingPlayers: [],
 			gameStatus: 'pre-game',
 			ff: {
@@ -302,6 +302,7 @@ mainApp.controller('MainCtrl', [
 			// 		track2: [],
 			// 		track3: []
 			// 	},
+			//	allChips: [],
 			// 	allCards: {}
 			// },
 			activeTiles: [],
