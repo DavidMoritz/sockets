@@ -32,7 +32,7 @@ html(ng-app='mainApp')
 				button.btn.btn-primary.facebook-login(ng-click='fbLogin()') Login with Facebook
 				h4 All Waiting Players
 				ul
-					li(ng-repeat='player in game.waitingPlayers')
+					li(ng-repeat='player in game.waitingPlayers track by id')
 						h5(ng-click='changeCurrentPlayer(player)') Name: {{player.name}}
 				button.btn.btn-success(ng-click='startGame()') Start Game
 				button.btn.btn-warning(ng-click='quickStart()') Quick Start
