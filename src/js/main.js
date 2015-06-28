@@ -266,7 +266,7 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function findActiveGames() {
-			io.socket.get('/game', {started: false}, function loadGames(games) {
+			io.socket.get('/game', {status: 'pre-game'}, function loadGames(games) {
 				if(games.length) {
 					/** TODO: This will eventually allow us to choose a game, but I am 
 					 * statically setting it for now */
@@ -281,6 +281,7 @@ mainApp.controller('MainCtrl', [
 		function createNewGame() {
 			io.socket.put('/game/create', {
 				currentSelection: [],
+				gameStatus: 'pre-game',
 				currentPlayer: {index: 0},
 				allPlayers: [],
 				waitingPlayers: [],
@@ -290,8 +291,7 @@ mainApp.controller('MainCtrl', [
 					track3: []
 				},
 				allCards: {},
-				allChips: [],
-				started: false
+				allChips: []
 			}, findActiveGames);
 		}
 
@@ -300,12 +300,12 @@ mainApp.controller('MainCtrl', [
 		//	initialize scoped variables
 		_.assign($s, {
 			time: moment().format(timeFormat),
-			gameStatus: 'pre-game',
 			ff: {
 				newPlayerName: ''
 			},
 			// game: {
 			// 	currentSelection: [],
+			//	gameStatus: 'pre-game',
 			// 	currentPlayer: {index: 0},
 			// 	allPlayers: [],
 			//	waitingPlayers: [],
@@ -356,12 +356,11 @@ mainApp.controller('MainCtrl', [
 			dealTiles($s.game.waitingPlayers.length + 1);
 			dealChips(chipCount);
 
-			$s.gameStatus = 'game-started';
+			$s.game.gameStatus = 'game-started';
 			_.each(_.shuffle($s.game.waitingPlayers), function eachPlayer(player) {
 				player.index = index++;
 				$s.game.allPlayers.push(player);
 			});
-			$s.game.started = true;
 			$s.changeCurrentPlayer();
 		};
 
