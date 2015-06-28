@@ -14,6 +14,7 @@ mainApp.controller('MainCtrl', [
 
 			getGems();
 			getCards();
+			findActiveGames();
 
 			io.socket.on('game', function(game) {
 				/**** This needs to be optimized ***/
@@ -248,6 +249,31 @@ mainApp.controller('MainCtrl', [
 			io.socket.put('/game/' + $s.gameId, $s.game);
 		}
 
+		function findActiveGames() {
+			io.socket.get('/game', {started: false}, function loadGames(games) {
+				if(games.length) {
+					$s.game = game[0];
+				} else {
+					createNewGame();
+				}
+			});
+		}
+
+		function createNewGame() {
+			io.socket.put('/game', {
+				currentSelection: [],
+				currentPlayer: {index: 0},
+				allPlayers: [],
+				activeCards: {
+					track1: [],
+					track2: [],
+					track3: []
+				},
+				allCards: {},
+				started: false
+			}, findActiveGames);
+		}
+
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 
 		//	initialize scoped variables
@@ -259,17 +285,17 @@ mainApp.controller('MainCtrl', [
 			ff: {
 				newPlayerName: ''
 			},
-			game: {
-				currentSelection: [],
-				currentPlayer: {index: 0},
-				allPlayers: [],
-				activeCards: {
-					track1: [],
-					track2: [],
-					track3: []
-				},
-				allCards: {}
-			},
+			// game: {
+			// 	currentSelection: [],
+			// 	currentPlayer: {index: 0},
+			// 	allPlayers: [],
+			// 	activeCards: {
+			// 		track1: [],
+			// 		track2: [],
+			// 		track3: []
+			// 	},
+			// 	allCards: {}
+			// },
 			activeTiles: [],
 			cursor: {
 				left: 0,
