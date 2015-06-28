@@ -24,11 +24,11 @@ html(ng-app='mainApp')
 				h4 Active Player: {{game.currentPlayer.name}}
 				.notices
 				p(ng-if='game.id') Game {{game.id}} Ready
+				p(ng-if='currentUser.name') You are logged in as {{currentUser.name}}
 			.pre-game
 				input(ng-model='ff.newPlayerName')
 				button.btn.btn-info(ng-click='newGuestPlayer()') Add New Player
 				.clearfix
-				h4.user You are logged in as {{currentUser.name}}
 				button.btn.btn-primary.facebook-login(ng-click='fbLogin()') Login with Facebook
 				h4 All Waiting Players
 				ul
