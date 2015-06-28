@@ -35,7 +35,7 @@ html(ng-app='mainApp')
 						h5(ng-click='changeCurrentPlayer(player)') Name: {{player.name}}
 				button.btn.btn-success(ng-click='startGame()') Start Game
 				button.btn.btn-warning(ng-click='quickStart()') Quick Start
-			.game-started.row
+			.game-started.row(ng-if='gameStatus === "game-started"')
 				+col(null, 3, 4, 3)
 					h4 All Players
 					ul
