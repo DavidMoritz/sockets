@@ -20,7 +20,8 @@ mainApp.controller('MainCtrl', [
 			io.socket.get('/game');
 			io.socket.on('game', function gameUpdated(game) {
 				/**** TODO: This needs to be optimized ***/
-				if(game.id === $s.gameId) {
+				// btw, this is "==" on purpose!
+				if(game.id == $s.gameId) {
 					$s.game = game.data;
 					// $s.$applyAsync();
 					// $s.$apply();
