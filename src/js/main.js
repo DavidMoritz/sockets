@@ -16,6 +16,8 @@ mainApp.controller('MainCtrl', [
 			findActiveGames();
 			$s.$watch($s.game);
 
+			// subscribe to "/game"
+			io.socket.get('/game');
 			io.socket.on('game', function gameUpdated(game) {
 				/**** TODO: This needs to be optimized ***/
 				if(game.id === $s.gameId) {
@@ -35,7 +37,6 @@ mainApp.controller('MainCtrl', [
 
 			// subscribe to "/cursor"
 			io.socket.get('/cursor');
-
 			io.socket.on('cursor',function cursorUpdated(obj){
 				/*** TODO: this needs to become game specific **/
 				cursor.style.left = obj.data.left;
@@ -260,13 +261,16 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function updateGame() {
-			io.socket.put('/game/' + $s.gameId, $s.game);
+			io.socket.put('/game/' + $s.game.id, $s.game);
 		}
 
 		function findActiveGames() {
 			io.socket.get('/game', {started: false}, function loadGames(games) {
 				if(games.length) {
+					/** TODO: This will eventually allow us to choose a game, but I am 
+					 * statically setting it for now */
 					$s.game = games[0];
+					$s.gameId = game[0].id;
 				} else {
 					createNewGame();
 				}
@@ -346,10 +350,6 @@ mainApp.controller('MainCtrl', [
 		$s.startGame = function startGame() {
 			var chipCount = $s.game.waitingPlayers.length === 4 ? 7 : $s.game.waitingPlayers.length + 2;
 			var index = 0;
-
-			/** TODO: This will eventually allow us to choose a game, but I am 
-			 * statically setting it for now */
-			$s.gameId = $s.game.id;
 
 			getCards();
 			dealTiles($s.game.waitingPlayers.length + 1);
