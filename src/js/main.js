@@ -347,14 +347,20 @@ mainApp.controller('MainCtrl', [
 			$s.gameStatus = 'game-started';
 			_.each(_.shuffle($s.waitingPlayers), function(player) {
 				player.index = index++;
+				$s.game.allPlayers.push(player);
 			});
 			$s.changeCurrentPlayer();
 		};
 
 		$s.quickStart = function quickStart() {
-			login({uid: "guest:123423"});
-			login({uid: "guest:235321"});
-			login({uid: "guest:353234"});
+			var friendsArray = _.shuffle([
+				"guest:123423",
+				"guest:235321",
+				"guest:353234"
+			]);
+			login({uid: friendsArray[0]});
+			login({uid: friendsArray[1]});
+			login({uid: friendsArray[2]});
 		};
 
 		$s.collectReserveCard = function collectReserveCard(player, card) {
