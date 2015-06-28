@@ -281,7 +281,7 @@ mainApp.controller('MainCtrl', [
 		function createNewGame() {
 			io.socket.put('/game/create', {
 				currentSelection: [],
-				gameStatus: 'pre-game',
+				status: 'pre-game',
 				currentPlayer: {index: 0},
 				allPlayers: [],
 				waitingPlayers: [],
@@ -305,7 +305,7 @@ mainApp.controller('MainCtrl', [
 			},
 			// game: {
 			// 	currentSelection: [],
-			//	gameStatus: 'pre-game',
+			//	status: 'pre-game',
 			// 	currentPlayer: {index: 0},
 			// 	allPlayers: [],
 			//	waitingPlayers: [],
@@ -356,7 +356,7 @@ mainApp.controller('MainCtrl', [
 			dealTiles($s.game.waitingPlayers.length + 1);
 			dealChips(chipCount);
 
-			$s.game.gameStatus = 'game-started';
+			$s.game.status = 'game-started';
 			_.each(_.shuffle($s.game.waitingPlayers), function eachPlayer(player) {
 				player.index = index++;
 				$s.game.allPlayers.push(player);
