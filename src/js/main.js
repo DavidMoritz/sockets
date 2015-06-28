@@ -328,10 +328,10 @@ mainApp.controller('MainCtrl', [
 		$s.changeCurrentPlayer = function changeCurrentPlayer(player) {
 			var index = $s.game.currentPlayer.index + 1;
 
-			if (index === $s.game.game.allPlayers.length) {
+			if (index === $s.game.allPlayers.length) {
 				index = 0;
 			}
-			$s.game.currentPlayer = player || _.find($s.game.game.allPlayers, {index: index});
+			$s.game.currentPlayer = player || _.find($s.game.allPlayers, {index: index});
 			updateGame();
 		};
 

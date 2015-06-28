@@ -23,6 +23,7 @@ html(ng-app='mainApp')
 				h2.text-center Welcome to Splendid Gems!
 				h4 Active Player: {{game.currentPlayer.name}}
 				.notices
+				p(ng-if='game.id') Game {{game.id}} Ready
 			.pre-game
 				input(ng-model='ff.newPlayerName')
 				button.btn.btn-info(ng-click='newGuestPlayer()') Add New Player
