@@ -341,6 +341,10 @@ mainApp.controller('MainCtrl', [
 			var chipCount = $s.waitingPlayers.length === 4 ? 7 : $s.waitingPlayers.length + 2;
 			var index = 0;
 
+			/** TODO: This will eventually allow us to choose a game, but I am 
+			 * statically setting it for now */
+			$s.gameId = $s.game.id;
+
 			getCards();
 			dealTiles($s.waitingPlayers.length + 1);
 			dealChips(chipCount);
