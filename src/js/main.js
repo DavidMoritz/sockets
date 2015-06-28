@@ -13,7 +13,6 @@ mainApp.controller('MainCtrl', [
 			window.$s = $s;
 
 			getGems();
-			getCards();
 			findActiveGames();
 
 			io.socket.on('game', function(game) {
@@ -104,11 +103,20 @@ mainApp.controller('MainCtrl', [
 			}
 		}
 
+		function startingDeal() {
+			for (var i = 1; i <= 3; i++) {
+				for (var j = 1; j <= 4; j++) {
+					dealCard('track' + i, true);
+				}
+			}
+		}
+
 		function getCards() {
 			io.socket.get('/card', {}, function getAllCards(allCards) {
 				$s.game.allCards.track1 = _.shuffle(_.where(allCards, {track: 1}));
 				$s.game.allCards.track2 = _.shuffle(_.where(allCards, {track: 2}));
 				$s.game.allCards.track3 = _.shuffle(_.where(allCards, {track: 3}));
+				startingDeal();
 			});
 		}
 
@@ -331,12 +339,7 @@ mainApp.controller('MainCtrl', [
 			var chipCount = $s.waitingPlayers.length === 4 ? 7 : $s.waitingPlayers.length + 2;
 			var index = 0;
 
-			for (var i = 1; i <= 3; i++) {
-				for (var j = 1; j <= 4; j++) {
-					dealCard('track' + i, false);
-				}
-			}
-
+			getCards();
 			dealTiles($s.waitingPlayers.length + 1);
 			dealChips(chipCount);
 
