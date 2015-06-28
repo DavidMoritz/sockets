@@ -260,7 +260,7 @@ mainApp.controller('MainCtrl', [
 		function findActiveGames() {
 			io.socket.get('/game', {started: false}, function loadGames(games) {
 				if(games.length) {
-					$s.game = game[0];
+					$s.game = games[0];
 				} else {
 					createNewGame();
 				}
