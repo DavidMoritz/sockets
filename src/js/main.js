@@ -15,8 +15,8 @@ mainApp.controller('MainCtrl', [
 			getGems();
 			findActiveGames();
 
-			io.socket.on('game', function(game) {
-				/**** This needs to be optimized ***/
+			io.socket.on('game', function gameUpdated(game) {
+				/**** TODO: This needs to be optimized ***/
 				if(game.id === $s.gameId) {
 					$s.game = game.data;
 				}
@@ -33,7 +33,8 @@ mainApp.controller('MainCtrl', [
 			// subscribe to "/cursor"
 			io.socket.get('/cursor');
 
-			io.socket.on('cursor',function(obj){
+			io.socket.on('cursor',function cursorUpdated(obj){
+				/*** TODO: this needs to become game specific **/
 				cursor.style.left = obj.data.left;
 				cursor.style.top = obj.data.top;
 			});
@@ -44,7 +45,7 @@ mainApp.controller('MainCtrl', [
 			$s.chatUser = "nikkyBot"
 			$s.chatMessage="";
 
-			io.socket.on('chat',function(obj){
+			io.socket.on('chat',function chatUpdated(obj){
 				if(obj.verb === 'created'){
 					$log.info(obj)
 					$s.chatList.push(obj.data);
@@ -54,7 +55,7 @@ mainApp.controller('MainCtrl', [
 				$log.info(obj)
 			});
 
-			$s.sendMsg = function(){
+			$s.sendMsg = function sendMsg(){
 				$log.info($s.chatMessage);
 				io.socket.post('/chat/addconv/',{
 					user:$s.chatUser,
@@ -84,7 +85,7 @@ mainApp.controller('MainCtrl', [
 				lastName: authData.facebook.cachedUserProfile.last_name,
 				picture: authData.facebook.cachedUserProfile.picture.data.url,
 				timezone: authData.facebook.cachedUserProfile.timezone
-			}, function(newUser) {
+			}, function afterUserCreated(newUser) {
 				$s.currentUser = newUser;
 				$s.waitingPlayers.push(new Player(newUser));
 			});
@@ -127,7 +128,7 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function dealTiles(count) {
-			io.socket.get('/tile', {}, function(tiles) {
+			io.socket.get('/tile', {}, function allTiles(tiles) {
 				$s.activeTiles = _.shuffle(tiles).splice(0, count);
 			});
 		}
@@ -137,7 +138,7 @@ mainApp.controller('MainCtrl', [
 				io.socket.get('/chip/', {
 					gem: gem.name,
 					limit: gem.name === 'gold' ? 5 : count
-				}, function(gems) {
+				}, function allGems(gems) {
 					$s.game.allChips = $s.game.allChips.concat(gems);
 				});
 			});
@@ -241,7 +242,7 @@ mainApp.controller('MainCtrl', [
 		}
 
 		function login(authData) {
-			io.socket.get('/user/', {uid: authData.uid}, function(users) {
+			io.socket.get('/user/', {uid: authData.uid}, function allUsers(users) {
 				if (!users.length) {
 					createNewUser(authData);
 				} else {
@@ -345,10 +346,11 @@ mainApp.controller('MainCtrl', [
 			dealChips(chipCount);
 
 			$s.gameStatus = 'game-started';
-			_.each(_.shuffle($s.waitingPlayers), function(player) {
+			_.each(_.shuffle($s.waitingPlayers), function eachPlayer(player) {
 				player.index = index++;
 				$s.game.allPlayers.push(player);
 			});
+			$s.game.started = true;
 			$s.changeCurrentPlayer();
 		};
 
@@ -490,7 +492,7 @@ mainApp.controller('MainCtrl', [
 		$s.fbLogin = function facebookLogin() {
 			var promise = FF.facebookLogin();
 
-			promise.then(function(authData) {
+			promise.then(function useAuthData(authData) {
 				login(authData);
 			});
 		};
