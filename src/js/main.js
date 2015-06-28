@@ -14,11 +14,14 @@ mainApp.controller('MainCtrl', [
 
 			getGems();
 			findActiveGames();
+			$s.$watch($s.game);
 
 			io.socket.on('game', function gameUpdated(game) {
 				/**** TODO: This needs to be optimized ***/
 				if(game.id === $s.gameId) {
 					$s.game = game.data;
+					// $s.$applyAsync();
+					// $s.$apply();
 				}
 			});
 			/**
@@ -71,7 +74,7 @@ mainApp.controller('MainCtrl', [
 				cards: [],
 				tiles: [],
 				reserve: [],
-				index: $s.waitingPlayers.length
+				index: $s.game.waitingPlayers.length
 			});
 		}
 
@@ -87,7 +90,8 @@ mainApp.controller('MainCtrl', [
 				timezone: authData.facebook.cachedUserProfile.timezone
 			}, function afterUserCreated(newUser) {
 				$s.currentUser = newUser;
-				$s.waitingPlayers.push(new Player(newUser));
+				$s.game.waitingPlayers.push(new Player(newUser));
+				updateGame();
 			});
 		}
 
@@ -247,7 +251,8 @@ mainApp.controller('MainCtrl', [
 					createNewUser(authData);
 				} else {
 					$s.currentUser = users[0];
-					$s.waitingPlayers.push(new Player(users[0]));
+					$s.game.waitingPlayers.push(new Player(users[0]));
+					updateGame();
 				}
 				$('body').addClass('logged-in');
 				$s.ff.newPlayerName = '';
@@ -273,6 +278,7 @@ mainApp.controller('MainCtrl', [
 				currentSelection: [],
 				currentPlayer: {index: 0},
 				allPlayers: [],
+				waitingPlayers: [],
 				activeCards: {
 					track1: [],
 					track2: [],
@@ -289,7 +295,6 @@ mainApp.controller('MainCtrl', [
 		//	initialize scoped variables
 		_.assign($s, {
 			time: moment().format(timeFormat),
-			waitingPlayers: [],
 			gameStatus: 'pre-game',
 			ff: {
 				newPlayerName: ''
@@ -298,6 +303,7 @@ mainApp.controller('MainCtrl', [
 			// 	currentSelection: [],
 			// 	currentPlayer: {index: 0},
 			// 	allPlayers: [],
+			//	waitingPlayers: [],
 			// 	activeCards: {
 			// 		track1: [],
 			// 		track2: [],
@@ -338,7 +344,7 @@ mainApp.controller('MainCtrl', [
 		};
 
 		$s.startGame = function startGame() {
-			var chipCount = $s.waitingPlayers.length === 4 ? 7 : $s.waitingPlayers.length + 2;
+			var chipCount = $s.game.waitingPlayers.length === 4 ? 7 : $s.game.waitingPlayers.length + 2;
 			var index = 0;
 
 			/** TODO: This will eventually allow us to choose a game, but I am 
@@ -346,11 +352,11 @@ mainApp.controller('MainCtrl', [
 			$s.gameId = $s.game.id;
 
 			getCards();
-			dealTiles($s.waitingPlayers.length + 1);
+			dealTiles($s.game.waitingPlayers.length + 1);
 			dealChips(chipCount);
 
 			$s.gameStatus = 'game-started';
-			_.each(_.shuffle($s.waitingPlayers), function eachPlayer(player) {
+			_.each(_.shuffle($s.game.waitingPlayers), function eachPlayer(player) {
 				player.index = index++;
 				$s.game.allPlayers.push(player);
 			});
