@@ -13,13 +13,13 @@ mainApp.controller('MainCtrl', [
 			window.$s = $s;
 
 			getGems();
-			findActiveGames();
-			$s.$watch($s.game);
+			//findActiveGames();
 
+			/*** io way og binding game
 			// subscribe to "/game"
 			io.socket.get('/game');
 			io.socket.on('game', function gameUpdated(game) {
-				/**** TODO: This needs to be optimized ***/
+				/**** TODO: This needs to be optimized *** /
 				// btw, this is "==" on purpose!
 				if(game.id == $s.gameId) {
 					$s.game = game.data;
@@ -27,6 +27,7 @@ mainApp.controller('MainCtrl', [
 					// $s.$apply();
 				}
 			});
+			***/
 			/**
 			// remove scrolling also removes click and drag
 			window.addEventListener('touchmove', function disallowScrolling(event) {
@@ -80,7 +81,7 @@ mainApp.controller('MainCtrl', [
 			});
 		}
 
-		function createNewUser(authData) {			
+		function createNewUser(authData) {
 			io.socket.post('/user/create/',{
 				name: authData.facebook.displayName,
 				rating: 1200,
@@ -93,7 +94,7 @@ mainApp.controller('MainCtrl', [
 			}, function afterUserCreated(newUser) {
 				$s.currentUser = newUser;
 				$s.game.waitingPlayers.push(new Player(newUser));
-				updateGame();
+				//updateGame();
 			});
 		}
 
@@ -106,7 +107,7 @@ mainApp.controller('MainCtrl', [
 		function dealCard(track, skip) {
 			$s.game.activeCards[track].push($s.game.allCards[track].splice(0, 1)[0]);
 			if(!skip) {
-				updateGame();
+				//updateGame();
 			}
 		}
 
@@ -254,7 +255,7 @@ mainApp.controller('MainCtrl', [
 				} else {
 					$s.currentUser = users[0];
 					$s.game.waitingPlayers.push(new Player(users[0]));
-					updateGame();
+					//updateGame();
 				}
 				$('body').addClass('logged-in');
 				$s.ff.newPlayerName = '';
@@ -268,7 +269,7 @@ mainApp.controller('MainCtrl', [
 		function findActiveGames() {
 			io.socket.get('/game', {status: 'pre-game'}, function loadGames(games) {
 				if(games.length) {
-					/** TODO: This will eventually allow us to choose a game, but I am 
+					/** TODO: This will eventually allow us to choose a game, but I am
 					 * statically setting it for now */
 					$s.game = games[0];
 					$s.gameId = games[0].id;
@@ -292,7 +293,7 @@ mainApp.controller('MainCtrl', [
 				},
 				allCards: {},
 				allChips: []
-			}, findActiveGames);
+			}/*, findActiveGames*/);
 		}
 
 		var timeFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -345,7 +346,7 @@ mainApp.controller('MainCtrl', [
 				index = 0;
 			}
 			$s.game.currentPlayer = player || _.find($s.game.allPlayers, {index: index});
-			updateGame();
+			//updateGame();
 		};
 
 		$s.startGame = function startGame() {
@@ -403,7 +404,7 @@ mainApp.controller('MainCtrl', [
 				$s.game.currentPlayer.tiles.push(tile);
 				$s.activeTiles = _.reject($s.activeTiles, tile);
 			}
-			updateGame();
+			//updateGame();
 		};
 
 		$s.collectChips = function collectChips() {
@@ -420,7 +421,7 @@ mainApp.controller('MainCtrl', [
 		$s.clearSelection = function clearSelection() {
 			$s.game.currentSelection = [];
 			delete $s.game.currentPlayer.reservation;
-			updateGame();
+			//updateGame();
 		};
 
 		$s.addChip = function addChip(gem) {
@@ -433,7 +434,7 @@ mainApp.controller('MainCtrl', [
 			} else {
 				$s.game.currentSelection.push(_.clone(gem));
 			}
-			updateGame();
+			//updateGame();
 		};
 
 		$s.gemAvailable = function notAvailable(gem) {
@@ -499,18 +500,43 @@ mainApp.controller('MainCtrl', [
 			});
 		};
 
+		$s.chooseGame = function chooseGame(gameId) {
+			//console.log('SESS> choosing Game: ' + gameId);
+
+			if (activeGameFBObj) {
+				activeGameFBObj.$destroy();
+				//console.log('SESS> activeGame is destroyed');
+			} else {
+				var firstLoad = true;
+			}
+
+			//console.log('SESS> choosing a Game');
+			activeGameFBObj = EF.getFBObject('games/' + gameId);
+			activeGameFBObj.$bindTo($s, 'game').then(function afterGameLoaded() {
+				//console.log('SESS> afterGameLoaded');
+			});
+		};
+
 		$s.fbLogin = function facebookLogin() {
 			var promise = FF.facebookLogin();
 
 			promise.then(function useAuthData(authData) {
 				login(authData);
 			});
-		};
 
-		$s.firebook = FF.getFBArray('facebook');
-		$s.firebook.$loaded(function afterFirebookLoaded() {
+		$s.allGames = FF.getFBArray('games');
+		$s.allGames.$loaded(function afterAllGamesLoaded() {
 			$('.notices').text('Firebase is working!');
 			$('body').addClass('facebook-available');
+
+			EF.getFB('activeGameId').on('value', function gotId(snap) {
+				$s.activeGameId = snap.val();
+				//console.log('SESS> new Game id: ' + $s.activeGameId);
+
+				if ($s.activeGameId) {
+					$s.chooseGame($s.activeGameId);
+				}
+			});
 		});
 
 		init();
